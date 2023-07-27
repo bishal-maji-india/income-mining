@@ -7,16 +7,16 @@ const User = require('../models/userModel');
 const register = async (req, res) => {
   const { parent_id, position,name,upline_id,mobile,email,address,state,country,pin,pan} = req.body;
 
-  // if ( !parent_id || !position || !name || !upline_id || !mobile || !email || !address|| !state|| !country|| !pin) {
-  //   return res.status(400).json({ success: false, message: 'All fields are required' });
-  // }
+  if ( !parent_id || !position || !name || !upline_id || !mobile || !email || !address|| !state|| !country|| !pin) {
+    return res.status(400).json({ success: false, message: 'All fields are required' });
+  }
 
   // Convert parent_id from string to ObjectId using mongoose.Types.ObjectId()
   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
   const newChildNode = {
     parent_id: parentId,
-    position,  require:false,
+    position,
     name,
     upline_id: uplineId,
     mobile,
@@ -113,4 +113,4 @@ async function countChildNodes(nodeId) {
 
 
 module.exports = register;
-module.exports=getChildNodes;
+// module.exports=getChildNodes;
