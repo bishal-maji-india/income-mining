@@ -29,42 +29,17 @@ const register = async (req, res) => {
     position,
 
   };
-
+  //  insertFirstUserTEST(parentId);
 
   insertChildAndUpdateParent(uplineId, position, newChildNode);
 
-   // for inserting the first user
-  // const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
-  // await User.create({
-  //   parent_id:parentId,
-  //   value:1
-  //   });
 
 
   res.status(200).json({ success: true, message: 'Registration successful' });
 };
 
-//@desc get list of child nodes of User
-//@route POST /api/users/getChildNodes
-//@access public
-const getChildNodes = async (req, res) => {
-  const { node_id } = req.body;
-
-  if (!node_id) {
-    return res.status(400).json({ success: false, message: 'All fields are required' });
-  }
-
-  const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
-
-  const childCounts = await countChildNodes(nodeId);
-
-  res.status(200).json({ success: true, message: "left childs="+childCounts.left+"right childs="+childCounts.right });
-};
-
-// Rest of the code remains the same...
-
 // Function to insert the new child node and update the parent node
-async function insertChildAndUpdateParent(parentId, position, newChild) {
+async function insertChildAndUpdateParent(uplineId, position, newChild) {
   try {
     // Step 1: Insert the new child node
     const childNode = new User(newChild);
@@ -73,12 +48,39 @@ async function insertChildAndUpdateParent(parentId, position, newChild) {
 
     // Step 2: Update the parent node
     const updateField = position === 'left' ? 'left_child_id' : 'right_child_id';
-    await User.updateOne({ _id: parentId }, { $set: { [updateField]: newChildId } });
+    await User.updateOne({ _id: uplineId }, { $set: { [updateField]: newChildId } });
 
     console.log('New child node inserted and parent node updated successfully.');
   } catch (err) {
     console.error('Error:', err.message);
   }
+}
+async function getFullChildNodes(nodeId) {
+  const node = await User.findById(nodeId);
+  if (!node) {
+    console.log("Node not found!");
+    return [];
+  }
+
+  const childNodes = [];
+  if (node.left_child_id) {
+    const leftChildNode = await User.findById(node.left_child_id);
+    if (leftChildNode && leftChildNode.is_active_user) {
+      const leftChildNodes = await getFullChildNodes(node.left_child_id);
+      childNodes.push(...leftChildNodes);
+    }
+  }
+
+  if (node.right_child_id) {
+    const rightChildNode = await User.findById(node.right_child_id);
+    if (rightChildNode && rightChildNode.is_active_user) {
+      const rightChildNodes = await getFullChildNodes(node.right_child_id);
+      childNodes.push(...rightChildNodes);
+    }
+  }
+
+  childNodes.push(node); // Add the current node to the array
+  return childNodes;
 }
 
 async function countChildNodes(nodeId) {
@@ -112,7 +114,53 @@ async function countChildNodes(nodeId) {
   return { left: leftChildCount, right: rightChildCount };
 }
 
+//@desc get list of child nodes of User
+//@route POST /api/users/getChildNodes
+//@access public
+const getChildNodes = async (req, res) => {
+  const { node_id } = req.body;
+
+  if (!node_id) {
+    return res.status(400).json({ success: false, message: 'All fields are required' });
+  }
+
+  const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
+
+  try {
+    const childNodes = await getFullChildNodes(nodeId);
+    res.status(200).json({ success: true, nodes: childNodes });
+  } catch (err) {
+    console.error('Error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+// const getChildNodes = async (req, res) => {
+//   const { node_id } = req.body;getChildNodes
+
+//   if (!node_id) {module.exports=getChildNodes;
+
+//     return res.status(400).json({ success: false, message: 'All fields are required' });
+//   }
+
+//   const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
+
+//   const childCounts = await countChildNodes(nodeId);
+
+//   res.status(200).json({ success: true, message: "left childs="+childCounts.left+"right childs="+childCounts.right });
+// };
 
 
 module.exports = register;
-// module.exports=getChildNodes;
+module.exports=getChildNodes;
+// async function insertFirstUserTEST(parent_id){
+//   //  for inserting the first user
+//   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
+//   await User.create({
+//     username:"First User Test",
+//     upline_id:parentId,
+//     sponsor_id:parentId,
+//     value:1
+//     });
+// }
