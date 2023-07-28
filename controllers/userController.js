@@ -62,26 +62,23 @@ async function getFullChildNodes(nodeId) {
     return [];
   }
 
-  const childNodes = [];
+  const childNodes = [node]; // Start with the current node as an array
+
+  // Recursively traverse the left child
   if (node.left_child_id) {
-    const leftChildNode = await User.findById(node.left_child_id);
-    if (leftChildNode && leftChildNode.is_active_user) {
-      const leftChildNodes = await getFullChildNodes(node.left_child_id);
-      childNodes.push(...leftChildNodes);
-    }
+    const leftChildNodes = await getFullChildNodes(node.left_child_id);
+    childNodes.push(...leftChildNodes); // Concatenate the left child nodes
   }
 
+  // Recursively traverse the right child
   if (node.right_child_id) {
-    const rightChildNode = await User.findById(node.right_child_id);
-    if (rightChildNode && rightChildNode.is_active_user) {
-      const rightChildNodes = await getFullChildNodes(node.right_child_id);
-      childNodes.push(...rightChildNodes);
-    }
+    const rightChildNodes = await getFullChildNodes(node.right_child_id);
+    childNodes.push(...rightChildNodes); // Concatenate the right child nodes
   }
 
-  childNodes.push(node); // Add the current node to the array
   return childNodes;
 }
+
 
 async function countChildNodes(nodeId) {
   const node = await User.findById(nodeId);
@@ -152,7 +149,7 @@ const getChildNodes = async (req, res) => {
 // };
 
 
-module.exports = register;
+// module.exports = register;
 module.exports=getChildNodes;
 // async function insertFirstUserTEST(parent_id){
 //   //  for inserting the first user

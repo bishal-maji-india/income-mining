@@ -20,24 +20,28 @@
       border: 1px solid #000;
       padding: 5px 10px;
       margin: 5px;
+      width: 200px; /* Set the width of the box to 200px */
+      position: relative;
     }
 
-    .arrow {
-      display: inline-block;
+    .arrow-down {
+      position: absolute;
+      bottom: -25px; /* Height of the arrow (50px) divided by 2 */
+      left: 50%; /* Position arrow at the center horizontally */
+      border-left: 2px solid #000;
+      border-right: 2px solid #000;
+      border-bottom: 50px solid #000;
       width: 0;
-      height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-bottom: 10px solid #000;
-      margin-top: -5px;
     }
 
     .divider {
-      width: 20px;
+      position: absolute;
+      top: 50%; /* Position divider at the center vertically */
+      left: 50%; /* Position divider at the center horizontally */
+      width: 100px;
       height: 2px;
       background-color: #000;
-      display: inline-block;
-      vertical-align: middle;
+      transform: translate(-50%, -50%); /* Center the divider */
     }
   </style>
 </head>
@@ -66,53 +70,59 @@
 
         // The 'nodes' array contains the nodes data received from the server.
         // You can now proceed to draw the binary tree using the 'nodes' array.
-        // You can use the createTreeNode function from the previous example.
 
-        // Example code to draw the binary tree:
         const treeContainer = document.getElementById('tree');
 
-        function createTreeNode(node) {
+        // Function to create a node element
+        function createNodeElement(node) {
           const nodeElement = document.createElement('div');
           nodeElement.classList.add('node');
-          nodeElement.textContent = node.username; // Customize this based on the properties you want to display
+          nodeElement.textContent = node.name; // Display the name of the node
 
-          if (node.left_child_id) {
-            const leftChildNode = nodes.find(n => n._id === node.left_child_id);
-            if (leftChildNode) {
-              const leftArrow = document.createElement('div');
-              leftArrow.classList.add('arrow');
+          if (node.left_child_id || node.right_child_id) {
+            const leftArrow = document.createElement('div');
+            leftArrow.classList.add('arrow-down');
 
-              const leftChildElement = createTreeNode(leftChildNode);
+            const leftDivider = document.createElement('div');
+            leftDivider.classList.add('divider');
 
-              nodeElement.appendChild(leftArrow);
-              nodeElement.appendChild(leftChildElement);
+            nodeElement.appendChild(leftArrow);
+            nodeElement.appendChild(leftDivider);
+
+            if (node.left_child_id) {
+              const leftChildNode = nodes.find(n => n._id === node.left_child_id);
+              if (leftChildNode) {
+                const leftChildElement = createNodeElement(leftChildNode);
+                nodeElement.appendChild(leftChildElement);
+              }
             }
-          }
 
-          if (node.right_child_id) {
-            const rightChildNode = nodes.find(n => n._id === node.right_child_id);
-            if (rightChildNode) {
+            if (node.right_child_id) {
               const rightArrow = document.createElement('div');
-              rightArrow.classList.add('arrow');
+              rightArrow.classList.add('arrow-down');
 
-              const rightChildElement = createTreeNode(rightChildNode);
-
-              const divider = document.createElement('div');
-              divider.classList.add('divider');
+              const rightDivider = document.createElement('div');
+              rightDivider.classList.add('divider');
 
               nodeElement.appendChild(rightArrow);
-              nodeElement.appendChild(divider);
-              nodeElement.appendChild(rightChildElement);
+              nodeElement.appendChild(rightDivider);
+
+              const rightChildNode = nodes.find(n => n._id === node.right_child_id);
+              if (rightChildNode) {
+                const rightChildElement = createNodeElement(rightChildNode);
+                nodeElement.appendChild(rightChildElement);
+              }
             }
           }
 
           return nodeElement;
         }
 
+        // Check if there are any nodes in the response
         if (nodes.length > 0) {
           const rootNode = nodes.find(n => n.parent_id === null);
           if (rootNode) {
-            const tree = createTreeNode(rootNode);
+            const tree = createNodeElement(rootNode);
             treeContainer.appendChild(tree);
           } else {
             console.error('Root node not found in the nodes array.');
