@@ -5,27 +5,29 @@ const User = require('../models/userModel');
 //@route POST /api/users/register
 //@access public
 const register = async (req, res) => {
-  const { parent_id, position,name,upline_id,mobile,email,address,state,country,pin,pan} = req.body;
+  const { username,parent_id, position,name,upline_id,mobile,email,address,state,country,pin,pan} = req.body;
 
-  if ( !parent_id || !position || !name || !upline_id || !mobile || !email || !address|| !state|| !country|| !pin) {
-    return res.status(400).json({ success: false, message: 'All fields are required' });
+  if ( !username||!parent_id || !position || !name || !upline_id || !mobile || !email || !address|| !state|| !country|| !pin) {
+    return res.status(400).json({ success: false, message: 'All register fields are required' });
   }
 
   // Convert parent_id from string to ObjectId using mongoose.Types.ObjectId()
   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
   const newChildNode = {
+    username,
     parent_id: parentId,
-    position,
     name,
     upline_id: uplineId,
     mobile,
     email,
-    pan,
     address,
     state,
-    country,
-    pin
+    country,  
+    pin,
+    pan,
+    position,
+
   };
 
 

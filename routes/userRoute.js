@@ -6,4 +6,5 @@ const getChildNodes = require('../controllers/userController');
 
 router.post('/register', register);
 router.post('/getChildNodes',getChildNodes);
+
 module.exports = router;

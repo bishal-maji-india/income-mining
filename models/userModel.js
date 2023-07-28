@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
+  username:{
+    type:String,
+    require:[true,"username is required"], 
+  },
   parent_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true, "parent id is required"],
   },
+
   name:{
      type:String,
      required:[true,"Name is required"],
 
   },
+  
   upline_id:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

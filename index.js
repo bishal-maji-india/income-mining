@@ -30,7 +30,6 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/users', userRouter);
-app.use('/api/users',userRouter)
 
 const port = process.env.PORT ||5000; // You can use any port you prefer
 app.listen(port,'0.0.0.0', () => {
