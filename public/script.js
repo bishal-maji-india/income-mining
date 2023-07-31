@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let treeNodes = [];
 
   async function fetchDataAndDrawTree() {
+    console.log("started");
     const baseUrl = "https://income-mining.onrender.com/api/users/getChildNodes";
     const nodeId = "64c00b6a849a379cc91b4ab4"; // Replace this with the node ID from your input field
 
@@ -100,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const response = await fetch(baseUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": undefined,
           "Accept": "application/json", // Add the Accept header
         },
         body: JSON.stringify({ node_id: nodeId }),
