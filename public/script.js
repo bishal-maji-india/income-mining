@@ -101,8 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const response = await fetch(baseUrl, {
         method: "POST",
         headers: {
-          "Content-Type": undefined,
-          "Accept": "application/json", // Add the Accept header
+          "Content-Type": "application/json" // Add the Accept header
         },
         body: JSON.stringify({ node_id: nodeId }),
       });
