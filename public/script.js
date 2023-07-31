@@ -108,10 +108,10 @@ document.addEventListener('DOMContentLoaded', function () {
       // if (!response.ok) {
       //   throw new Error("Network response was not ok.");
       // }  
-      const data = await response.json();
+      const nodeData = await response.json();
 
-      if (data.success === true) {
-        const apiResponse = data.nodes;
+      if (nodeData.success === true) {
+        const apiResponse = nodeData.nodes;
         console.log(apiResponse);
         treeNodes = apiResponse.map((nodeData) => new TreeNode(nodeData._id, getFirstLetter(nodeData.name), nodeData.left_child_id, nodeData.right_child_id));
 
