@@ -105,9 +105,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         body: JSON.stringify({ node_id: nodeId }),
       });
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
-      }  
+      // if (!response.ok) {
+      //   throw new Error("Network response was not ok.");
+      // }  
       const data = await response.json();
 
       if (data.success === true) {
