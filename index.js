@@ -14,9 +14,9 @@ app.use(express.static('public'));
 
 app.use(morgan('combined'));
 
-// Set CORS headers to allow requests from a specific origin (in this case, https://income-mining.onrender.com)
+// Set CORS headers to allow requests from your frontend application's base URL (https://incomminings.com)
 app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://income-mining.onrender.com');
+  res.setHeader('Access-Control-Allow-Origin', 'https://incomminings.com');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Allow-Credentials', true);
