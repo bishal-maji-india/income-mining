@@ -125,7 +125,16 @@ const getChildNodes = async (req, res) => {
 
   try {
     const childNodes = await getFullChildNodes(nodeId);
-    res.status(200).json({ success: true, nodes: childNodes });
+
+    // Convert the JSON string to a JavaScript object
+    const responseObject = JSON.parse(childNodes);
+    
+    // Extract the "nodes" array from the object
+    const nodesArray = responseObject.nodes;
+    
+    // Return the extracted nodesArray in the response
+    res.status(200).json({ success: true, nodes: nodesArray });
+    
   } catch (err) {
     console.error('Error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
