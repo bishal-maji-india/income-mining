@@ -17,8 +17,9 @@ app.use(morgan('combined'));
 // Set CORS headers to allow requests from your frontend application's base URL (https://incomminings.com)
 app.use(function (req, res, next) {
   // res.setHeader('Access-Control-Allow-Origin', 'https://incomminings.com');
-  // res.setHeader('Access-Control-Allow-Origin', 'https://incomminings.com, http://127.0.0.1:5501');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://incomminings.com, http://127.0.0.1:5501, http://127.0.0.1:5501/public/index.html');
+  // http://127.0.0.1:5501/public/index.html
+  // res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Allow-Credentials', true);
