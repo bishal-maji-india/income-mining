@@ -5,9 +5,9 @@ const User = require('../models/userModel');
 //@route POST /api/users/register
 //@access public
 const register = async (req, res) => {
-  const { username,parent_id, position,name,upline_id,mobile,email,address,state,country,pin,pan} = req.body;
+  const { username,password,parent_id,position,name,upline_id,mobile,email,address,state,country,pin,pan} = req.body;
 
-  if ( !username||!parent_id || !position || !name || !upline_id || !mobile || !email || !address|| !state|| !country|| !pin) {
+  if ( !password||!username||!parent_id || !position || !name || !upline_id || !mobile || !email || !address|| !state|| !country|| !pin) {
     return res.status(400).json({ success: false, message: 'All register fields are required' });
   }
 
@@ -16,6 +16,7 @@ const register = async (req, res) => {
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
   const newChildNode = {
     username,
+    password,
     parent_id: parentId,
     name,
     upline_id: uplineId,
@@ -25,9 +26,7 @@ const register = async (req, res) => {
     state,
     country,  
     pin,
-    pan,
-    position,
-
+    pan
   };
   //  insertFirstUserTEST(parentId);
 
@@ -132,6 +131,66 @@ const getChildNodes = async (req, res) => {
   }
 };
 
+//@desc get list of child nodes of User
+//@route POST /api/users/getUplineId
+//@access public
+const assignUplineId = async (req, res) => {
+  const { sponsor_id, position} = req.body;
+
+  if (!sponsor_id ) {
+    return res.status(400).json({ success: false, message: 'Sponsor id is missing' });
+  }
+  if (!position ) {
+    return res.status(400).json({ success: false, message: 'Postion is missing' });
+  }
+
+  const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
+
+  try {
+    const uplineNode = await getUplineNodeId(nodeId, position);
+    res.status(200).json({ success: true, upline_id: uplineNode });
+  } catch (err) {
+    console.error('Error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+async function getUplineNodeId(uplineId, position) {
+  const node = await User.findById(uplineId);
+  if (!node) {
+    console.log("Node not found!");
+    return null;
+  }
+
+  if (position === "left" && node.left_child_id) {
+    // Recursively find the last left child node
+    const lastLeftChildId = await getUplineNodeId(node.left_child_id, position);
+    if (lastLeftChildId) {
+      return lastLeftChildId;
+    }
+  }
+
+  if (position === "right" && node.right_child_id) {
+    // Recursively find the last right child node
+    const lastRightChildId = await getUplineNodeId(node.right_child_id, position);
+    if (lastRightChildId) {
+      return lastRightChildId;
+    }
+  }
+
+  // If the position is "left" and the node doesn't have a left child, or
+  // if the position is "right" and the node doesn't have a right child,
+  // return the current node's MongoDB ID
+  return node._id;
+}
+
+
+module.exports = {
+  register,
+  getChildNodes,
+  assignUplineId,
+};
 
 // const getChildNodes = async (req, res) => {
 //   const { node_id } = req.body;getChildNodes
@@ -149,8 +208,7 @@ const getChildNodes = async (req, res) => {
 // };
 
 
-// module.exports = register;
-module.exports=getChildNodes;
+
 // async function insertFirstUserTEST(parent_id){
 //   //  for inserting the first user
 //   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);

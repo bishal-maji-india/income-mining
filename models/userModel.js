@@ -16,7 +16,10 @@ const userSchema = mongoose.Schema({
      required:[true,"Name is required"],
 
   },
-  
+  password:{
+    type:String,
+    required:[true,"password is required"],
+  },
   upline_id:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

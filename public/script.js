@@ -105,16 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         body: JSON.stringify({ node_id: nodeId }),
       });
-      // if (!response.ok) {
-      //   throw new Error("Network response was not ok.");
-      // }  
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }  
       const nodeData = await response.json();
 
       if (nodeData.success === true) {
         const apiResponse = nodeData.nodes;
-        console.log(apiResponse);
-        treeNodes = apiResponse.map((nodeData) => new TreeNode(nodeData._id, getFirstLetter(nodeData.name), nodeData.left_child_id, nodeData.right_child_id));
-
+        console.log("array"+apiResponse);
+        treeNodes = apiResponse.map((nodeData) => new TreeNode(nodeData._id, nodeData.name, nodeData.left_child_id, nodeData.right_child_id));
+        drawCenteredTree(treeNodes);
         // Draw the centered tree using the fetched data
         resizeCanvasToFitTree(treeNodes);
       } else {
@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const xDistance = Math.abs(event.clientX - rect.left - node.x);
         const yDistance = Math.abs(event.clientY - rect.top - node.y);
 
+
         if (xDistance <= 20 && yDistance <= 20) {
           updatePopupPosition(popup, node);
           break; // Only update the position for the first clicked node (if multiple nodes overlap)
@@ -186,8 +187,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function updatePopupPosition(popup, node) {
       const popupWidth = popup.offsetWidth;
       const popupHeight = popup.offsetHeight;
-      const popupX = node.x - popupWidth / 2;
-      const popupY = node.y - popupHeight - 20 - canvasScroll.scrollTop;
+      // const popupX = node.x - popupWidth;
+      // const popupY = node.y - popupHeight - 20 - canvasScroll.scrollTop;
+      const popupX=10;
+      const popupY=10;
       popup.style.left = `${popupX}px`;
       popup.style.top = `${popupY}px`;
     }
