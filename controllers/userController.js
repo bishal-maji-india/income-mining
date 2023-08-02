@@ -79,36 +79,37 @@ async function getFullChildNodes(nodeId) {
 }
 
 
-async function countChildNodes(nodeId) {
-  const node = await User.findById(nodeId);
-  if (!node) {
-    console.log("Node not found!");
-    return { left: 0, right: 0 };
-  }
+// async function countChildNodes(nodeId) {
+  
+//   const node = await User.findById(nodeId);
+//   if (!node) {
+//     console.log("Node not found!");
+//     return { left: 0, right: 0 };
+//   }
 
-  let leftChildCount = 0;
-  let rightChildCount = 0;
+//   let leftChildCount = 0;
+//   let rightChildCount = 0;
 
-  if (node.left_child_id) {
-    // Recursively count the left child nodes
-    const leftChildNode = await User.findById(node.left_child_id);
-    if (leftChildNode && leftChildNode.is_active_user) {
-      const leftChildCounts = await countChildNodes(node.left_child_id);
-      leftChildCount = leftChildCounts.left + leftChildCounts.right + 1;
-    }
-  }
+//   if (node.left_child_id) {
+//     // Recursively count the left child nodes
+//     const leftChildNode = await User.findById(node.left_child_id);
+//     if (leftChildNode && leftChildNode.is_active_user) {
+//       const leftChildCounts = await countChildNodes(node.left_child_id);
+//       leftChildCount = leftChildCounts.left + leftChildCounts.right + 1;
+//     }
+//   }
 
-  if (node.right_child_id) {
-    // Recursively count the right child nodes
-    const rightChildNode = await User.findById(node.right_child_id);
-    if (rightChildNode && rightChildNode.is_active_user) {
-      const rightChildCounts = await countChildNodes(node.right_child_id);
-      rightChildCount = rightChildCounts.left + rightChildCounts.right + 1;
-    }
-  }
+//   if (node.right_child_id) {
+//     // Recursively count the right child nodes
+//     const rightChildNode = await User.findById(node.right_child_id);
+//     if (rightChildNode &uplineId& rightChildNode.is_active_user) {
+//       const rightChildCounts = await countChildNodes(node.right_child_id);
+//       rightChildCount = rightChildCounts.left + rightChildCounts.right + 1;
+//     }
+//   }
 
-  return { left: leftChildCount, right: rightChildCount };
-}
+//   return { left: leftChildCount, right: rightChildCount };
+// }
 
 //@desc get list of child nodes of User
 //@route POST /api/users/getChildNodes
@@ -131,8 +132,8 @@ const getChildNodes = async (req, res) => {
   }
 };
 
-//@desc get list of child nodes of User
-//@route POST /api/users/getUplineId
+//@desc get l
+//@route POST /api/users/assignUplineId
 //@access public
 const assignUplineId = async (req, res) => {
   const { sponsor_id, position} = req.body;
@@ -187,9 +188,10 @@ async function getUplineNodeId(uplineId, position) {
 
 
 module.exports = {
+  assignUplineId,
   register,
   getChildNodes,
-  assignUplineId,
+ 
 };
 
 // const getChildNodes = async (req, res) => {

@@ -6,6 +6,7 @@
 <body>
     <h1>User Registration Form</h1>
     <form id="registrationForm">
+        const requiredFields = ["email", "mobile", "first_name", "last_name", "password", "address", "city", "state", "pin", "country"];
 
         <label for="first_name">First Name:</label>
         <input type="text" id="first_name" required><br>
@@ -25,12 +26,12 @@
         <label for="pan">PAN ID (Optional):</label>
         <input type="text" id="pan"><br>
 
-        <label for="parent_id">Sponsor ID (String):</label>
-        <input type="text" id="parent_id" onchange="showCheckbox()"><br>
+        <label for="parent_id">Parent ID (Optional):</label>
+        <input type="text" id="parent_id" ><br>
 
-        <div id="positionCheckbox" style="display: none;">
+        <div id="positionCheckbox" >
             <label>Choose position:</label><br>
-            <input type="radio" id="leftPosition" name="position" value="left">
+            <input type="radio" id="leftPosition" name="position" value="left" checked>
             <label for="leftPosition">Left</label><br>
             <input type="radio" id="rightPosition" name="position" value="right">
             <label for="rightPosition">Right</label><br>
@@ -49,16 +50,19 @@
             <option value="state2">State 2</option>
             <!-- Add more state options here -->
         </select><br>
-        <label for="country">State:</label>
+
+        <label for="country">Country:</label>
         <select id="country" required>
             <option value="country1">Country 1</option>
-            <!-- Add more state options here -->
+            <!-- Add more country options here -->
         </select><br>
 
         <label for="pin">Pincode:</label>
         <input type="number" id="pin" required><br>
 
         <button type="submit">Submit</button>
+
+
     </form>
 
     <script>
@@ -69,7 +73,7 @@
  
 
             const formData = {
-                username: formElements.first_name.value.toLowerCase()+formElements.last_name.value.toLowerCase(),
+                username: formElements.first_name.value.toLowerCase() + formElements.last_name.value.toLowerCase(),
                 email: formElements.email.value,
                 mobile: formElements.mobile.value,
                 password: formElements.password.value,
@@ -78,117 +82,119 @@
                 address: formElements.address.value,
                 city: formElements.city.value,
                 state: formElements.state.value,
-                country:formElements.country.value,
+                country: formElements.country.value,
                 pin: formElements.pin.value,
-                pan:formElements.pan.value,
-                upline_id:formElements.parent_id.value,
-                position:"left",
+                upline_id: formElements.parent_id.value,
+                position: document.getElementById('positionCheckbox')
+            ? document.querySelector('input[name="position"]:checked').value
+            : "left",
             };
          // Check if all the required fields are filled
-         if (validateForm(formData)) {
+        //  if (validateForm(formData)) {
+            console.log("inside valid");
                 // Use AJAX to make the API request
                fetchAssignedID(formData);
-            } else {
+            // } else {
                 // Display a message to the user indicating that all required fields must be filled.
-                alert("Please fill in all the required fields.");
-            }
+        //         alert("Please fill in all the required fields.");
+        //     }
         });
 
-        // Function to fetch the Sponsor ID using GET request
+        // Function to fetch the parent ID using GET request
         function fetchAssignedID(formData) {
-            const positionI = document.querySelector('input[name="position"]:checked').value;
-            formData.position=positionI;
+
             if (!formData.parent_id || formData.parent_id.trim() === "") {
-
-            const postData = {
-            // sponsor_id: "first node id that will be temp upline id",
-            sponsor_id:"64c00b6a849a379cc91b4ab4",
-            position: position,
-            };
-
-            }else{
-            const postData = {
-            sponsor_id: formData.parent_id,
-            position: position, // or "right" based on your requirement
-            };
-
+                const postData = {
+                    sponsor_id: "64c00b6a849a37sponsor9cc91b4ab4",
+                    position: formData.position,
+                };
+                performPostRequest(formData, postData);
+            } else {
+                const postData = {
+                    sponsor_id: formData.parent_id,
+                    position: formData.position,
+                };
+                performPostRequest(formData, postData);
             }
-fetch("https://incomeminings.onrender.com/api/users/assignUplineId/" , {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(postData),
-})
-  .then((response) => response.json())
-  .then((data) => {
-    const { upline_id, success } = data;
-    if(success){
-        console.log(upline_id);
-       performPostRequest(formData,upline_id);
-    }
-
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
-
-
-
-          
-}
+        }
 
         // Function to perform the POST request
-        function performPostRequest(formData,recomand_upline_id) {
-            formData.upline_id = recomand_upline_id; 
-            // Use AJAX to make the POST request
-            fetch('https://incomeminings.onrender.com/api/users/register', {
-                method: 'POST',
+        function performPostRequest(formData, postData) {
+            fetch("https://incomeminings.onrender.com/api/users/assignUplineId/", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-
-                body: JSON.stringify(formData)
+                body: JSON.stringify(postData),
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log('API Response:', data);
-                // Handle the API response here if needed
+            .then((response) => response.json())
+            .then((data) => {
+                const { upline_id, success } = data;
+                if (success) {
+                    console.log(upline_id);
+                    formData.upline_id = upline_id;
+                    // Use AJAX to make the POST request
+                    fetch('https://incomeminings.onrender.com/api/users/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('API Response:', data);
+                        // Handle the API response here if needed
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle errors here if needed
+                    });
+                }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                // Handle errors here if needed
+            .catch((error) => {
+                console.error("Error:", error);
             });
         }
 
-        // Function to check if all the required fields are filled
         function validateForm(formData) {
-            // List of required field names
-            const requiredFields = ["email", "mobile", "first_name", "last_name", "password", "address", "city", "state", "pin","country"];
+    // List of required field names
+    const requiredFields = ["email", "mobile", "first_name", "last_name", "password", "address", "city", "state", "pin", "country"];
 
-            for (const field of requiredFields) {
-                if (!formData[field] || formData[field].trim() === "") {
-                    return false;
-                }
-            }
-            return true;
+    for (const field of requiredFields) {
+        if (!formData[field] || formData[field].trim() === "") {
+            return false;
         }
+    }
 
-        // Function to show/hide the positionCheckbox based on Sponsor ID input
-        function showCheckbox() {
-            const sponsorIdInput = document.getElementById("parent_id");
-            const positionCheckbox = document.getElementById("positionCheckbox");
-            if (sponsorIdInput.value.trim() !== "") {
-                positionCheckbox.style.display = "block";
-            } else {
-                positionCheckbox.style.display = "none";
-            }
+    // Check for the position field only when the "positionCheckbox" is present
+    if (document.getElementById("positionCheckbox")) {
+        const positionElements = document.querySelectorAll('input[name="position"]');
+        if (!Array.from(positionElements).some(el => el.checked)) {
+            return false;
         }
+    }
 
-        // Add event listener to the Sponsor ID input field
-        document.getElementById("parent_id").addEventListener("input", function() {
-            showCheckbox();
-        });
+    return true;
+}
+
+
+// // Function to show/hide the positionCheckbox based on Sponsor ID input
+// function showCheckbox() {
+//     const sponsorIdInput = document.getElementById("parent_id");
+//     const positionCheckbox = document.getElementById("positionCheckbox");
+//     if (sponsorIdInput.value.trim() !== "") {
+//         positionCheckbox.style.display = "block";
+//     } else {
+//         positionCheckbox.style.display = "none";
+//     }
+// }
+
+// // Add event listener to the Sponsor ID input field
+// document.getElementById("parent_id").addEventListener("input", function() {
+//     showCheckbox();
+// });
+    
     </script>
 </body>
 </html>
