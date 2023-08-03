@@ -148,51 +148,45 @@ const assignUplineId = async (req, res) => {
   const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
 
   try {
-    const uplineNode = await getUplineNodeId(nodeId, position);
+   
+    const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
     res.status(200).json({ success: true, upline_id: uplineNode });
   } catch (err) {
     console.error('Error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
-
-async function getUplineNodeId(uplineId, position) {
+async function findNearestNodeWithNullChild(uplineId, position) {
+  console.log("uid"+uplineId);
   const node = await User.findById(uplineId);
   if (!node) {
     console.log("Node not found!");
     return null;
   }
 
-  if (position === "left" && node.left_child_id) {
-    // Recursively find the last left child node
-    const lastLeftChildId = await getUplineNodeId(node.left_child_id, position);
-    if (lastLeftChildId) {
-      return lastLeftChildId;
-    }
+  // Check if the current node has no left or right child
+  if (!node.left_child_id && !node.right_child_id) {
+    return node._id; // Return the current node ID itself
   }
 
-  if (position === "right" && node.right_child_id) {
-    // Recursively find the last right child node
-    const lastRightChildId = await getUplineNodeId(node.right_child_id, position);
-    if (lastRightChildId) {
-      return lastRightChildId;
-    }
+  let childId = position === "left" ? node.left_child_id : node.right_child_id;
+
+  // If the specified position is "left" and the left child is null, or
+  // if the specified position is "right" and the right child is null,
+  // return the current node ID itself.
+  if ((position === "left" && !childId) || (position === "right" && !childId)) {
+    return node._id;
   }
 
-  // If the position is "left" and the node doesn't have a left child, or
-  // if the position is "right" and the node doesn't have a right child,
-  // return the current node's MongoDB ID
-  return node._id;
+  // Recursively find the nearest node with null child
+  return await findNearestNodeWithNullChild(childId, position);
 }
 
 
-module.exports = {
-  assignUplineId,
-  register,
-  getChildNodes,
- 
-};
+
+module.exports.register = register;
+module.exports.getChildNodes = getChildNodes;
+module.exports.assignUplineId = assignUplineId;
 
 // const getChildNodes = async (req, res) => {
 //   const { node_id } = req.body;getChildNodes

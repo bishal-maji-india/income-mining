@@ -36,6 +36,9 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/users', userRouter);
+app.post('/api/users', function(req, res){
+  Controller.Create
+});
 
 const port = process.env.PORT || 5000; // You can use any port you prefer
 app.listen(port, '0.0.0.0', () => {

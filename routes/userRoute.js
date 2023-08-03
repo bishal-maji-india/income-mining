@@ -1,14 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const register = require('../controllers/userController');
-const getChildNodes = require('../controllers/userController');
-const assignUplineId = require('../controllers/userController');
+const userController = require('../controllers/userController');
 
-
-
-
-router.post('/register', register);
-router.post('/getChildNodes',getChildNodes);
-router.post('/assignUplineId',assignUplineId);
+router.post('/register', userController.register);
+router.post('/getChildNodes', userController.getChildNodes);
+router.post('/assignUplineId', userController.assignUplineId);
 
 module.exports = router;
