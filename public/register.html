@@ -1,45 +1,63 @@
-<h1>User Registration Form</h1>
-<form id="registrationForm">
-    <label for="email">Email:</label>
-    <input type="email" id="email" required><br>
 
-    <label for="phone">Phone:</label>
-    <input type="tel" id="phone" required><br>
+    <div>
+    <form id="registrationForm">
 
-    <label for="first_name">First Name:</label>
-    <input type="text" id="first_name" required><br>
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br>
 
-    <label for="last_name">Last Name:</label>
-    <input type="text" id="last_name" required><br>
+        <label for="username">Username:(Unique)</label>
+        <input type="text" id="username" required><br>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" required><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br>
 
-    <label for="pan_id">PAN ID (Optional):</label>
-    <input type="text" id="pan_id"><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required><br>
 
-    <label for="sponsor_id">Sponsor ID (String):</label>
-    <input type="text" id="sponsor_id" required><br>
+        <label for="mobile">Phone:</label>
+        <input type="tel" id="mobile" required><br>
 
-    <label for="address">Address:</label>
-    <textarea id="address" required></textarea><br>
+        <label for="pan">PAN ID (Optional):</label>
+        <input type="text" id="pan"><br>
+        
+        <label for="parent_id">Parent ID (Optional):</label>
+        <input type="text" id="parent_id"><br>
+        
 
-    <label for="city">City:</label>
-    <select id="city" required>
-        <option value="city1">City 1</option>
-        <option value="city2">City 2</option>
-        <!-- Add more city options here -->
-    </select><br>
+        <div id="positionCheckbox">
+            <label>Choose position:</label><br>
+            <input type="radio" id="leftPosition" name="position" value="left" checked>
+            <label for="leftPosition">Left</label><br>
+            <input type="radio" id="rightPosition" name="position" value="right">
+            <label for="rightPosition">Right</label><br>
+        </div>
 
-    <label for="state">State:</label>
-    <select id="state" required>
-        <option value="state1">State 1</option>
-        <option value="state2">State 2</option>
-        <!-- Add more state options here -->
-    </select><br>
+        <label for="address">Address:</label>
+        <textarea id="address" required></textarea><br>
 
-    <label for="pincode">Pincode:</label>
-    <input type="number" id="pincode" required><br>
+        <label for="city">City:</label>
+        <textarea id="city" required></textarea><br>
+        <br>
 
-    <button type="submit">Submit</button>
-</form>
+        <label for="state">State:</label>
+        <select id="state" required>
+            <option value="state1">State 1</option>
+            <option value="state2">State 2</option>
+            <!-- Add more state options here -->
+        </select><br>
+
+        <label for="country">Country:</label>
+        <select id="country" required>
+            <option value="country1">Country 1</option>
+            <!-- Add more country options here -->
+        </select><br>
+
+        <label for="pin">Pincode:</label>
+        <input type="number" id="pin" required><br>
+
+        <button type="submit">Submit</button>
+
+
+    </form>
+</div>
+<script src="script_node.js "></script>

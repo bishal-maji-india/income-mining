@@ -4,6 +4,7 @@ const userSchema = mongoose.Schema({
   username:{
     type:String,
     require:[true,"username is required"], 
+    unique:true,
   },
   parent_id: {
     type: mongoose.Schema.Types.ObjectId,

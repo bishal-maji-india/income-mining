@@ -5,37 +5,58 @@ const User = require('../models/userModel');
 //@route POST /api/users/register
 //@access public
 const register = async (req, res) => {
-  const { username,password,parent_id,position,name,upline_id,mobile,email,address,state,country,pin,pan} = req.body;
-
-  if ( !password||!username||!parent_id || !position || !name || !upline_id || !mobile || !email || !address|| !state|| !country|| !pin) {
-    return res.status(400).json({ success: false, message: 'All register fields are required' });
-  }
-
-  // Convert parent_id from string to ObjectId using mongoose.Types.ObjectId()
-  const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
-  const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
-  const newChildNode = {
+  const {
     username,
     password,
-    parent_id: parentId,
+    parent_id,
+    position,
     name,
-    upline_id: uplineId,
+    upline_id,
     mobile,
     email,
     address,
     state,
-    country,  
+    country,
     pin,
     pan
-  };
-  //  insertFirstUserTEST(parentId);
+  } = req.body;
 
-  insertChildAndUpdateParent(uplineId, position, newChildNode);
+  // Check if any required fields are missing
+  if (!password || !username || !parent_id || !position || !name || !upline_id || !mobile || !email || !address || !state || !country || !pin) {
+    return res.status(400).json({ success: false, message: 'All register fields are required' });
+  }
 
+  // Convert parent_id and upline_id from string to ObjectId using mongoose.Types.ObjectId()
+  const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
+  const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
 
+  // Insert the new child node and update the parent node
+  try {
+    const newChildNode = {
+      username,
+      password,
+      parent_id: parentId,
+      name,
+      upline_id: uplineId,
+      mobile,
+      email,
+      address,
+      state,
+      country,
+      pin,
+      pan
+    };
+    // Your logic for inserting/updating data goes here
+    const msg= insertChildAndUpdateParent(uplineId, position, newChildNode);
 
-  res.status(200).json({ success: true, message: 'Registration successful' });
+    // If the above logic is successful, send a success response
+    res.status(200).json({ success: true, message:msg });
+  } catch (error) {
+    // If any error occurs during registration, send an error response
+    return res.status(500).json({ success: false, message: 'An error occurred during registration' });
+  }
 };
+
 
 // Function to insert the new child node and update the parent node
 async function insertChildAndUpdateParent(uplineId, position, newChild) {

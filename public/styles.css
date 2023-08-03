@@ -1,0 +1,28 @@
+    /* Hide the default radio buttons */
+    input[type="radio"] {
+        display: none;
+    }
+    
+    /* Create a custom checkbox style */
+    input[type="radio"] + label {
+        position: relative;
+        padding-left: 25px;
+        cursor: pointer;
+    }
+    
+    /* Create the checkmark as a pseudo-element */
+    input[type="radio"] + label::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 2px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #000;
+        border-radius: 50%;
+    }
+    
+    /* Style the checkmark when the radio button is checked */
+    input[type="radio"]:checked + label::before {
+        background-color: #000;
+    }

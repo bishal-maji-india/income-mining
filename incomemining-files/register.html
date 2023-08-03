@@ -1,12 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        /* Hide the default radio buttons */
+input[type="radio"] {
+    display: none;
+}
+
+/* Create a custom checkbox style */
+input[type="radio"] + label {
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+}
+
+/* Create the checkmark as a pseudo-element */
+input[type="radio"] + label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000;
+    border-radius: 50%;
+}
+
+/* Style the checkmark when the radio button is checked */
+input[type="radio"]:checked + label::before {
+    background-color: #000;
+}
+
+    </style>
     <title>User Registration Form</title>
+
 </head>
 <body>
+
     <h1>User Registration Form</h1>
     <form id="registrationForm">
-        const requiredFields = ["email", "mobile", "first_name", "last_name", "password", "address", "city", "state", "pin", "country"];
 
         <label for="first_name">First Name:</label>
         <input type="text" id="first_name" required><br>
@@ -25,11 +57,12 @@
 
         <label for="pan">PAN ID (Optional):</label>
         <input type="text" id="pan"><br>
-
+        
         <label for="parent_id">Parent ID (Optional):</label>
-        <input type="text" id="parent_id" ><br>
+        <input type="text" id="parent_id"><br>
+        
 
-        <div id="positionCheckbox" >
+        <div id="positionCheckbox">
             <label>Choose position:</label><br>
             <input type="radio" id="leftPosition" name="position" value="left" checked>
             <label for="leftPosition">Left</label><br>
@@ -70,12 +103,12 @@
         document.getElementById("registrationForm").addEventListener("submit", function(event) {
             event.preventDefault();
             const formElements = event.target.elements;
- 
-
+        
             const formData = {
-                username: formElements.first_name.value.toLowerCase() + formElements.last_name.value.toLowerCase(),
                 email: formElements.email.value,
                 mobile: formElements.mobile.value,
+                first_name: formElements.first_name.value,
+                last_name: formElements.last_name.value,
                 password: formElements.password.value,
                 pan: formElements.pan.value,
                 parent_id: formElements.parent_id.value,
@@ -84,28 +117,35 @@
                 state: formElements.state.value,
                 country: formElements.country.value,
                 pin: formElements.pin.value,
-                upline_id: formElements.parent_id.value,
-                position: document.getElementById('positionCheckbox')
-            ? document.querySelector('input[name="position"]:checked').value
-            : "left",
-            };
+                position: (document.querySelector('input[name="position"]:checked') || {}).value || "left",
+              };
          // Check if all the required fields are filled
-        //  if (validateForm(formData)) {
+         if (validateForm(formData)) {
             console.log("inside valid");
                 // Use AJAX to make the API request
-               fetchAssignedID(formData);
-            // } else {
+               fetchAssignedID(formData,formElements);
+            } else {
                 // Display a message to the user indicating that all required fields must be filled.
-        //         alert("Please fill in all the required fields.");
-        //     }
+                alert("Please fill in all the required fields.");
+            }
         });
 
         // Function to fetch the parent ID using GET request
-        function fetchAssignedID(formData) {
+        function fetchAssignedID(formData,formElements) {
+            
+            const username = (formElements.first_name.value.toLowerCase() + formElements.last_name.value.toLowerCase()).trim();
+            const name = (formElements.first_name.value+" "+formElements.last_name.value);// Create the username field by concatenating first_name and last_name in lowercasetrim();
+            formData.username = username;
+            formData.name=name;
+            delete formData.first_name;
+            delete formData.last_name;
 
             if (!formData.parent_id || formData.parent_id.trim() === "") {
+                // script.js
+
+                const solid = "64c00b6a849a37cc91b4ab4";
                 const postData = {
-                    sponsor_id: "64c00b6a849a37sponsor9cc91b4ab4",
+                    sponsor_id: solid,
                     position: formData.position,
                 };
                 performPostRequest(formData, postData);
@@ -120,7 +160,9 @@
 
         // Function to perform the POST request
         function performPostRequest(formData, postData) {
-            fetch("https://incomeminings.onrender.com/api/users/assignUplineId/", {
+          
+
+            fetch("https://income-mining.onrender.com/api/users/assignUplineId", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -134,7 +176,7 @@
                     console.log(upline_id);
                     formData.upline_id = upline_id;
                     // Use AJAX to make the POST request
-                    fetch('https://incomeminings.onrender.com/api/users/register', {
+                    fetch('https://income-mining.onrender.com/api/users/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -162,12 +204,12 @@
     const requiredFields = ["email", "mobile", "first_name", "last_name", "password", "address", "city", "state", "pin", "country"];
 
     for (const field of requiredFields) {
-        if (!formData[field] || formData[field].trim() === "") {
+        if (!formData[field] || formData[field] === "") {
             return false;
         }
     }
 
-    // Check for the position field only when the "positionCheckbox" is present
+    // Check for the position field only when the "positionCheckbox" Cis present
     if (document.getElementById("positionCheckbox")) {
         const positionElements = document.querySelectorAll('input[name="position"]');
         if (!Array.from(positionElements).some(el => el.checked)) {
@@ -178,23 +220,6 @@
     return true;
 }
 
-
-// // Function to show/hide the positionCheckbox based on Sponsor ID input
-// function showCheckbox() {
-//     const sponsorIdInput = document.getElementById("parent_id");
-//     const positionCheckbox = document.getElementById("positionCheckbox");
-//     if (sponsorIdInput.value.trim() !== "") {
-//         positionCheckbox.style.display = "block";
-//     } else {
-//         positionCheckbox.style.display = "none";
-//     }
-// }
-
-// // Add event listener to the Sponsor ID input field
-// document.getElementById("parent_id").addEventListener("input", function() {
-//     showCheckbox();
-// });
-    
     </script>
 </body>
 </html>
