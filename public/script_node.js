@@ -32,19 +32,21 @@ document.getElementById("registrationForm").addEventListener("submit", function(
 });
 
 // Function to fetch the parent ID using GET request
-function fetchAssignedID(formData,id_sponsor) {
+function fetchAssignedID(formData,sponsor_id) {
 
     if (!formData.parent_id || formData.parent_id.trim() === "") {
         const postData = {
-            sponsor_id: id_sponsor,
+            sponsor_id: sponsor_id,
             position: formData.position,
         };
+        console.log("inside if="+sponsor_id);
         performPostRequest(formData, postData);
     } else {
         const postData = {
             sponsor_id: formData.parent_id,
             position: formData.position,
         };
+        console.log("ins else="+postData);
         performPostRequest(formData, postData);
     }
 }

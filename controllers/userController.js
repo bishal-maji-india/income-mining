@@ -68,21 +68,19 @@ async function insertChildAndUpdateParent(uplineId, position, newChild) {
 
     // Step 2: Update the parent node
     const updateField = position === 'left' ? 'left_child_id' : 'right_child_id';
-
-    
 // Assuming the User variable is already declared or imported
 await User.updateOne({ _id: uplineId }, { $set: { [updateField]: newChildId } });
 
 // Fetch the updated user after the update
-const updatedUser = await User.findById(uplineId);
+const newUser = await User.findById(newChildId);
 
 // Check if the user was found
-if (!updatedUser) {
+if (!newUser) {
   return "User not found";
 }
 
-// Return the updated user's data
-return "Username: " + updatedUser.username + "    " + "Password: " + updatedUser.password;
+// Return the updated user's dataupdateField
+return "Username: " + newUser.username + "    " + "Password: " + newUser.password;
 
   } catch (err) {
     return  err.message;
