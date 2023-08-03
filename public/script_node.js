@@ -21,8 +21,10 @@ document.getElementById("registrationForm").addEventListener("submit", function(
  // Check if all the required fields are filled
  if (validateForm(formData)) {
     console.log("inside valid");
+
+    const sponsor_id = "64c00b6a849a379cc91b4ab4";
         // Use AJAX to make the API request
-       fetchAssignedID(formData,formElements);
+       fetchAssignedID(formData,sponsor_id);
     } else {
         // Display a message to the user indicating that all required fields must be filled.
         alert("Please fill in all the required fields.");
@@ -30,13 +32,11 @@ document.getElementById("registrationForm").addEventListener("submit", function(
 });
 
 // Function to fetch the parent ID using GET request
-function fetchAssignedID(formData,formElements) {
+function fetchAssignedID(formData,id_sponsor) {
 
     if (!formData.parent_id || formData.parent_id.trim() === "") {
-
-        const solid = "64c00b6a849a379cc91b4ab4";
         const postData = {
-            sponsor_id: solid,
+            sponsor_id: id_sponsor,
             position: formData.position,
         };
         performPostRequest(formData, postData);
