@@ -22,7 +22,7 @@ document.getElementById("registrationForm").addEventListener("submit", function(
     if (validateForm(formData)) {
         console.log("inside valid");
 
-        const sponsor_id = "64c00b6a849a379cc91b4ab4";
+        const sponsor_id = '64c00b6a849a379cc91b4ab4';
         fetchAssignedID(formData, sponsor_id);
     } else {
         // Display a message to the user indicating that all required fields must be filled.
@@ -72,10 +72,12 @@ function performPostRequest(formData, postData) {
         // Assuming "data" is an object with a property "result" that contains the desired data
         console.log("Response data:", data);
         const resultData = data.message;
-        console.log("result"+resultData);
+        if (data.success) {
+           console.log( data.message);
+        }
     // Encode the data to be passed as URL parameter
     const encodedData = encodeURIComponent(JSON.stringify(resultData));
-
+    console.log(encodedData);
     // Construct the URL with the encoded data parameter
     const registerResultURL = `http://127.0.0.1:5501/public/register_result.html?data=${encodedData}`;
 

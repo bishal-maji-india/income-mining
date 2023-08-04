@@ -46,12 +46,16 @@ const register = async (req, res) => {
       pin,
       pan
     };
-    // Your logic for inserting/updating data goes here
-    const msg= insertChildAndUpdateParent(uplineId, position, newChildNode);
+   
+    // Call the insertChildAndUpdateParent function
+    const response = await insertChildAndUpdateParent(uplineId, position, newChildNode);
 
-    // If the above logic is successful, send a success response
-    res.status(200).json({ success: true, message:msg });
-    
+    // If the above logic is successful, send a success response with the message
+    if (response.success) {
+      res.status(200).json({ success: true, message: response.message });
+    } else {
+      res.status(500).json({ success: false, message: response.message });
+    }
   } catch (error) {
     // If any error occurs during registration, send an error response
     return res.status(500).json({ success: false, message: 'An error occurred during registration' });
@@ -77,19 +81,25 @@ const newUser = await User.findById(newChildId);
 
 // Check if the user was found
 if (!newUser) {
-  return "User not found";
+  return {
+    success: false,
+    message: "User not Found"
+  };
 }
 
 // Return the updated user's dataupdateField
-const message="Username: " + newUser.username + "    " + "Password: " + newUser.password;
-console.log(message);
-return message;
+return {
+  success: true,
+  message: "Username: " + newUser.username + "    " + "Password: " + newUser.password
+};
 
   } catch (err) {
-    return  err.message;
+    return {
+      success: false,
+      message: err.message
+    };
   }
 }
-
 async function getFullChildNodes(nodeId) {
   const node = await User.findById(nodeId);
   if (!node) {
@@ -192,7 +202,6 @@ const assignUplineId = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
 async function findNearestNodeWithNullChild(uplineId, position) {
   console.log("uid"+uplineId);
   const node = await User.findById(uplineId);
