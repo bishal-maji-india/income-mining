@@ -51,6 +51,7 @@ const register = async (req, res) => {
 
     // If the above logic is successful, send a success response
     res.status(200).json({ success: true, message:msg });
+    
   } catch (error) {
     // If any error occurs during registration, send an error response
     return res.status(500).json({ success: false, message: 'An error occurred during registration' });
@@ -80,12 +81,15 @@ if (!newUser) {
 }
 
 // Return the updated user's dataupdateField
-return "Username: " + newUser.username + "    " + "Password: " + newUser.password;
+const message="Username: " + newUser.username + "    " + "Password: " + newUser.password;
+console.log(message);
+return message;
 
   } catch (err) {
     return  err.message;
   }
 }
+
 async function getFullChildNodes(nodeId) {
   const node = await User.findById(nodeId);
   if (!node) {
@@ -188,6 +192,7 @@ const assignUplineId = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 async function findNearestNodeWithNullChild(uplineId, position) {
   console.log("uid"+uplineId);
   const node = await User.findById(uplineId);

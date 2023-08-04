@@ -5,7 +5,7 @@ Description: Adds custom JavaScript code to your website.
 */
 
 function user_script_enqueue() {
-    wp_enqueue_script( 'user-script', plugin_dir_url( __FILE__ ) . 'script.js', array( 'jquery' ), '1.0', true );
+    wp_enqueue_script( 'user-script', plugin_dir_url( __FILE__ ) . 'script.js', array( 'jquery' ), '1.1', true );
 
 }
 
