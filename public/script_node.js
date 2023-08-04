@@ -1,5 +1,5 @@
 // Function to handle form submission
-document.getElementById("registrationForm").addEventListener("submit", function(event) {
+document.getElementById("registrationForm").addEventListener("submit",async function(event) {
     event.preventDefault();
     const formElements = event.target.elements;
 
@@ -18,78 +18,71 @@ document.getElementById("registrationForm").addEventListener("submit", function(
         pin: formElements.pin.value,
         position: (document.querySelector('input[name="position"]:checked') || {}).value || "left",
       };
- // Check if all the required fields are filled
- if (validateForm(formData)) {
+  // Check if all the required fields are filled
+  if (validateForm(formData)) {
     console.log("inside valid");
 
     const sponsor_id = "64c00b6a849a379cc91b4ab4";
-        // Use AJAX to make the API request
-       fetchAssignedID(formData,sponsor_id);
-    } else {
-        // Display a message to the user indicating that all required fields must be filled.
-        alert("Please fill in all the required fields.");
-    }
+    // Use await to wait for the fetchAssignedID function to complete before proceeding
+    await fetchAssignedID(formData, sponsor_id);
+} else {
+    // Display a message to the user indicating that all required fields must be filled.
+    alert("Please fill in all the required fields.");
+}
 });
 
-// Function to fetch the parent ID using GET request
-function fetchAssignedID(formData,sponsor_id) {
+async function fetchAssignedID(formData, sponsor_id) {
+if (!formData.parent_id || formData.parent_id.trim() === "") {
+    const postData = {
+        sponsor_id: sponsor_id,
+        position: formData.position,
+    };
+    formData.parent_id = sponsor_id;
 
-    if (!formData.parent_id || formData.parent_id.trim() === "") {
-        const postData = {
-            sponsor_id: sponsor_id,
-            position: formData.position,
-        };
-        console.log("inside if="+sponsor_id);
-        performPostRequest(formData, postData);
-    } else {
-        const postData = {
-            sponsor_id: formData.parent_id,
-            position: formData.position,
-        };
-        console.log("ins else="+postData);
-        performPostRequest(formData, postData);
-    }
+    // Use await to wait for the performPostRequest function to complete before proceeding
+    await performPostRequest(formData, postData);
+} else {
+    const postData = {
+        sponsor_id: formData.parent_id,
+        position: formData.position,
+    };
+   
+    // Use await to wait for the performPostRequest function to complete before proceeding
+    await performPostRequest(formData, postData);
+}
 }
 
-// Function to perform the POST request
-function performPostRequest(formData, postData) {
-  
-
-    fetch("https://income-mining.onrender.com/api/users/assignUplineId", {
+async function performPostRequest(formData, postData) {
+try {
+    const response = await fetch("https://income-mining.onrender.com/api/users/assignUplineId", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(postData),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-        const { upline_id, success } = data;
-        if (success) {
-            console.log(upline_id);
-            formData.upline_id = upline_id;
-            // Use AJAX to make the POST request
-            fetch('https://income-mining.onrender.com/api/users/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('API Response:', data);
-                // Handle the API response here if needed
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Handle errors here if needed
-            });
-        }
-    })
-    .catch((error) => {
-        console.error("Error:", error);
     });
+
+    const data = await response.json();
+    const { upline_id, success } = data;
+    if (success) {
+        formData.upline_id = upline_id;
+        // Use await to wait for the fetch request to complete before proceeding
+        const registerResponse = await fetch('https://income-mining.onrender.com/api/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const registerData = await registerResponse.json();
+        console.log('API Response:', registerData);
+        // Handle the API response here if needed
+    }
+} catch (error) {
+    console.error('Error:', error);
+    // Handle errors here if needed
+}
 }
 
 function validateForm(formData) {
