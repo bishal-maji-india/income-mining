@@ -170,27 +170,16 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 
 const getGlobalNumber = async () => {
-  //the id
-  const documentId = mongoose.Types.ObjectId.createFromHexString('64ce19a74b2f5e0900c8ff78');
 
-    try {
-    const result = await GlobalCount.findByIdAndUpdate(
-      documentId,
-      { $inc: { im: 1 } },
-      { new: true }
-    );
-    console.log('Updated value:', result.im);
-  } catch (error) {
-    console.error('Error:', error);
-  }
 
   try {
     const collection = mongoose.connection.db.collection('global_user_count');
     // const collection = db.collection('global_user_count');
     // Find the document and get the current value of the 'im' field
     const result = await collection.findOneAndUpdate(
-      { _id: ObjectId('64cdcb18e51bfac6b6e9dd76') },
-      { $inc: { im: 1 } }// Return the updated document
+      { _id: ObjectId('64ce19a74b2f5e0900c8ff78') },
+      { $inc: { im: 1 } },
+      { new: true }
     );
  
     
