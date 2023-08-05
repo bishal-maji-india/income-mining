@@ -97,7 +97,7 @@ if (!newUser) {
 // Return the updated user's dataupdateField
 return {
   success: true,
-  message: "Username: " + newUser.username + "    " + "Password: " + newUser.password
+  message: "Username: " + newUser.new_username + "    " + "Password: " + newUser.password
 };
 
   } catch (err) {
