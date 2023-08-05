@@ -34,8 +34,6 @@ const register = async (req, res) => {
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
 
 let numberResult = await getGlobalNumber();
-console.log(numberResult.message);
-console.log(numberResult);
 
 
 let new_username="IM" + name.slice(0, 2).toUpperCase();
@@ -172,7 +170,8 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 
 const getGlobalNumber = async () => {
-  const documentId = ObjectId('64cdcb18e51bfac6b6e9dd76');
+  const documentId = mongoose.Types.ObjectId.createFromHexString('64cdcb18e51bfac6b6e9dd76');
+
     try {
     const result = await GlobalCount.findByIdAndUpdate(
       documentId,
