@@ -19,21 +19,27 @@
 
 
   // Get the URL parameter named 'data'
-const urlParams = new URLSearchParams(window.location.search);
-const encodedData = urlParams.get('data');
-
-if (encodedData) {
-    // Decode the data and parse it as JSON
-    const decodedData = JSON.parse(decodeURIComponent(encodedData));
-
-    // Now you can use the decodedData as needed
-    console.log("dasta"+decodedData);
-    
-
-    const jsonString = JSON.stringify(decodedData, null, 2); // Using pretty-printing with 2 spaces
+ // Function to retrieve the message from the URL parameter
+ function getMessageFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
  
-    document.getElementById('result-field').textContent = jsonString;
-} else {
-  document.getElementById('result-field').textContent = "error is hapen";
-}
-
+     // Check if the URL parameter "message" is present
+     const messageParam = urlParams.get('message');
+     if (messageParam !== null) {
+      try {
+        // Attempt to parse the messageParam as JSON
+        const parsedMessage = JSON.parse(decodeURIComponent(messageParam));
+  
+        // If successful, display the parsed message in the result field
+        document.getElementById('result-field').textContent = parsedMessage;
+      } catch (error) {
+        // If parsing as JSON fails, treat it as plain text and display it
+        document.getElementById('result-field').textContent = decodeURIComponent(messageParam);
+      }
+    } else {
+      document.getElementById('result-field').textContent = "Something went wrong";
+    }
+  }
+  
+  // Call the function to retrieve and display the message when the page loads
+  getMessageFromURL();

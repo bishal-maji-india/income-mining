@@ -184,8 +184,6 @@ const getGlobalNumber = async () => {
       success: false,
       message: err.message
     };
-  } finally {
-    mongoose.disconnect(); // Disconnect from the database when done
   }
 };
 
