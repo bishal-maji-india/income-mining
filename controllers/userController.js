@@ -31,8 +31,8 @@ const register = async (req, res) => {
   // Convert parent_id and upline_id from string to ObjectId using mongoose.Types.ObjectId()
   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
-  const connectionDB = await connectDB();
-  const numberResponse = await getGlobalNumber(connectionDB.db);
+
+  const number = await getGlobalNumber();
 
   username="IM"+name.slice(0, 2).toUpperCase()+number;
   // Insert the new child node and update the parent node
@@ -160,11 +160,11 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 
 
-const getGlobalNumber = async (db) => {
+const getGlobalNumber = async () => {
 
   try {
-
-    const collection = db.collection('global_user_count');
+    const collection = mongoose.connection.db.collection('global_user_count');
+    // const collection = db.collection('global_user_count');
 
     // Find the document and get the current value of the 'im' field
     const result = await collection.findOneAndUpdate(
