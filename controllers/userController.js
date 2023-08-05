@@ -169,10 +169,11 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 
 const getGlobalNumber = async () => {
+  const docid = mongoose.Types.ObjectId.createFromHexString('64ce19a74b2f5e0900c8ff78');
 
     try {
     const result = await GlobalCount.findByIdAndUpdate(
-      { _id: ObjectId('64ce19a74b2f5e0900c8ff78') },
+      { _id: docid},
       { $inc: { im: 1 } },
       { new: true }
     );
