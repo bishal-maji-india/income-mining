@@ -170,7 +170,8 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 
 const getGlobalNumber = async () => {
-  const documentId = mongoose.Types.ObjectId.createFromHexString('64cdcb18e51bfac6b6e9dd76');
+  //the id
+  const documentId = mongoose.Types.ObjectId.createFromHexString('64ce19a74b2f5e0900c8ff78');
 
     try {
     const result = await GlobalCount.findByIdAndUpdate(
