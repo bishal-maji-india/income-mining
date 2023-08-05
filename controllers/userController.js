@@ -177,7 +177,7 @@ const getGlobalNumber = async () => {
       { $inc: { im: 1 } },
       { new: true }
     );
-    const incrementedValue = result.value.im;
+    const incrementedValue = result.im;
     return {
       success: true,
       message: incrementedValue
