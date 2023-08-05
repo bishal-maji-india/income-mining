@@ -38,7 +38,7 @@ const register = async (req, res) => {
   // Insert the new child node and update the parent node
   try {
     const newChildNode = {
-      new_username,
+      username: new_username,
       password,
       parent_id: parentId,
       name,
@@ -97,7 +97,7 @@ if (!newUser) {
 // Return the updated user's dataupdateField
 return {
   success: true,
-  message: "Username: " + newUser.new_username + "    " + "Password: " + newUser.password
+  message: "Username: " + newUser.username + "    " + "Password: " + newUser.password
 };
 
   } catch (err) {
