@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
-const connectDB = require('../config/connectionDb');
+const { ObjectId } = require('mongodb'); 
+
 //@desc Register User
 //@route POST /api/users/register
 //@access public
