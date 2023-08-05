@@ -35,7 +35,6 @@ const register = async (req, res) => {
 
 let numberResult = await getGlobalNumber();
 
-
 let new_username="IM" + name.slice(0, 2).toUpperCase();
 if (numberResult.success) {
    new_username = new_username+ numberResult.message;
@@ -171,30 +170,28 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 const getGlobalNumber = async () => {
 
-
-  try {
-    const collection = mongoose.connection.db.collection('global_user_count');
-    // const collection = db.collection('global_user_count');
-    // Find the document and get the current value of the 'im' field
-    const result = await collection.findOneAndUpdate(
+    try {
+    const result = await GlobalCount.findByIdAndUpdate(
       { _id: ObjectId('64ce19a74b2f5e0900c8ff78') },
       { $inc: { im: 1 } },
       { new: true }
     );
- 
-    
     const incrementedValue = result.value.im;
     return {
       success: true,
       message: incrementedValue
     };
-  } catch (err) {
-    console.error('Error:', err.message);
+
+  } catch (error) {
+    console.error('Error:', error);
     return {
       success: false,
-      message: err.message
+      message: error
     };
   }
+
+
+
 };
 
 async function getFullChildNodes(nodeId) {
