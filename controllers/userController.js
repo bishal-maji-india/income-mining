@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
 const { ObjectId } = require('mongodb'); 
+const connectDB = require('../config/connectionDb');
 
 //@desc Register User
 //@route POST /api/users/register
@@ -30,7 +31,9 @@ const register = async (req, res) => {
   // Convert parent_id and upline_id from string to ObjectId using mongoose.Types.ObjectId()
   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
-  const number=await getGlobalNumber();
+  const connectionDB = await connectDB();
+  const numberResponse = await getGlobalNumber(connectionDB.db);
+
   username="IM"+name.slice(0, 2).toUpperCase()+number;
   // Insert the new child node and update the parent node
   try {
@@ -122,9 +125,6 @@ const assignUplineId = async (req, res) => {
 
   try {
 
-    //here first we will get the global number
-    const number= await getGlobalNumber();
-   
     const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
     res.status(200).json({ success: true, upline_id: uplineNode });
   } catch (err) {
@@ -160,11 +160,10 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 
 
-const getGlobalNumber = async (req, res) => {
+const getGlobalNumber = async (db) => {
 
   try {
 
-    const db = mongoose.connection.db; // Get the database instance from Mongoose
     const collection = db.collection('global_user_count');
 
     // Find the document and get the current value of the 'im' field
