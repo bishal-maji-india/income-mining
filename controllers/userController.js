@@ -2,7 +2,88 @@ const mongoose = require('mongoose');
 const User = require('../models/userModel');
 const GlobalCount=require('../models/globalCountModel');
 const { ObjectId } = require('mongodb'); 
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt'); // For password hashing
 
+
+
+//@desc Login User
+//@route POST /api/users/login
+//@access public
+const login = async (req, res) => {
+  const {
+    username,
+    password
+  } = req.body;
+
+  // Check if any required fields are missing
+  if (!password || !username ) {
+    return res.status(400).json({ success: false, message: 'All Login fields are required' });
+  }
+  // Insert the new child node and update the parent node
+  try {
+    const userDetail = {
+      username,
+      password
+    };
+    
+
+
+    // Call the insertChildAndUpdateParent function
+    const response = await loginUser(userDetail);
+
+    // If the above logic is successful, send a success response with the message
+    if (response.success) {
+      //save the response jwt for further request 
+      console.log(response.message);
+      // res.status(200).json({ success: true, message: response.message });
+    } else {
+      res.status(500).json({ success: false, message: response.message });
+    }
+  } catch (error) {
+    // If any error occurs during registration, send an error response
+    return res.status(500).json({ success: false, message: 'An error occurred during Login' });
+  }
+};
+async function loginUser(userDetail){
+  try {
+    // Step 1: Find the user by username
+    const user = await User.findOne({ username });
+
+    // Check if the user exists
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found"
+      };
+    }
+
+    // Step 2: Compare the provided password with the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        message: "Invalid password"
+      };
+    }
+
+    // Step 3: Generate a JWT token
+    const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' }); // Adjust the expiration time as needed
+
+    return {
+      success: true,
+      message: "Login successful",
+      token:token
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message
+    };
+  }
+}
 
 //@desc Register User
 //@route POST /api/users/register
@@ -45,9 +126,13 @@ if (numberResult.success) {
 }
   // Insert the new child node and update the parent node
   try {
+        // Hash the password before storing it
+        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
+
+
     const newChildNode = {
       username: new_username,
-      password,
+      password: hashedPassword,
       parent_id: parentId,
       name,
       upline_id: uplineId,
