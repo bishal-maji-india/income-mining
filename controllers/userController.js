@@ -199,7 +199,7 @@ const assignUplineId = async (req, res) => {
   try {
 
     //here first we will get the global number
-    const number= await getUserNumber();
+    const number= await getGlobalNumber();
    
     const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
     res.status(200).json({ success: true, upline_id: uplineNode });
