@@ -175,7 +175,7 @@ const getGlobalNumber = async () => {
 
   try {
     const result = await GlobalCount.findByIdAndUpdate(
-      '64cdcb18e51bfac6b6e9dd76',
+      '64ce19a74b2f5e0900c8ff78',
       { $inc: { im: 1 } },
       { new: true }
     );
