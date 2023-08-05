@@ -33,6 +33,10 @@ const register = async (req, res) => {
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
 
 let numberResult = await getGlobalNumber();
+console.log(numberResult.message);
+console.log(numberResult);
+
+
 let new_username="IM" + name.slice(0, 2).toUpperCase();
 if (numberResult.success) {
    new_username = new_username+ numberResult.message;
@@ -171,14 +175,13 @@ const getGlobalNumber = async () => {
   try {
     const collection = mongoose.connection.db.collection('global_user_count');
     // const collection = db.collection('global_user_count');
-
     // Find the document and get the current value of the 'im' field
     const result = await collection.findOneAndUpdate(
       { _id: ObjectId('64cdcb18e51bfac6b6e9dd76') },
-      { $inc: { im: 1 } }, // Increment the 'im' field by 1
-      { returnOriginal: false } // Return the updated document
+      { $inc: { im: 1 } }// Return the updated document
     );
-
+ 
+    
     const incrementedValue = result.value.im;
     return {
       success: true,
