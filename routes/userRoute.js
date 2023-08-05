@@ -5,4 +5,5 @@ const userController = require('../controllers/userController');
 router.post('/register', userController.register);
 router.post('/getChildNodes', userController.getChildNodes);
 router.post('/assignUplineId', userController.assignUplineId);
+
 module.exports = router;
