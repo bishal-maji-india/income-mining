@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
-const { MongoClient, ObjectId } = require('mongodb');
 const connectDB = require('./config/connectionDb');// Update the path to the connectDB file
 
 //@desc Register User
