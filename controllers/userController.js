@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
+const { MongoClient, ObjectId } = require('mongodb');
+const connectDB = require('./config/connectionDb');// Update the path to the connectDB file
 
 //@desc Register User
 //@route POST /api/users/register
@@ -29,7 +31,8 @@ const register = async (req, res) => {
   // Convert parent_id and upline_id from string to ObjectId using mongoose.Types.ObjectId()
   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
-
+  const number=await getGlobalNumber();
+  username="IM"+name.slice(0, 2).toUpperCase()+number;
   // Insert the new child node and update the parent node
   try {
     const newChildNode = {
@@ -46,7 +49,9 @@ const register = async (req, res) => {
       pin,
       pan
     };
-   
+    
+
+
     // Call the insertChildAndUpdateParent function
     const response = await insertChildAndUpdateParent(uplineId, position, newChildNode);
 
@@ -194,6 +199,9 @@ const assignUplineId = async (req, res) => {
   const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
 
   try {
+
+    //here first we will get the global number
+    const number= await getUserNumber();
    
     const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
     res.status(200).json({ success: true, upline_id: uplineNode });
@@ -227,6 +235,40 @@ async function findNearestNodeWithNullChild(uplineId, position) {
   // Recursively find the nearest node with null child
   return await findNearestNodeWithNullChild(childId, position);
 }
+
+
+
+const getGlobalNumber = async (req, res) => {
+
+  try {
+    await connectDB();
+    
+    const db = client.db('incomemining_db'); // Replace with your database name
+    const collection = db.collection('global_user_count');
+
+    // Find the document and get the current value of the 'im' field
+    const result = await collection.findOneAndUpdate(
+      { _id: ObjectId('64cdcb18e51bfac6b6e9dd76') },
+      { $inc: { im: 1 } }, // Increment the 'im' field by 1
+      { returnOriginal: false } // Return the updated document
+    );
+
+    const incrementedValue = result.value.im;
+    return {
+      success: true,
+      message: incrementedValue
+    };
+  } catch (err) {
+    console.error('Error:', err.message);
+    return {
+      success: false,
+      message: err.message
+    };
+  } finally {
+    // Close the MongoDB connection
+    await client.close();
+  }
+};
 
 
 
