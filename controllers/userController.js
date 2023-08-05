@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/userModel');
+const GlobalCount=require('../models/globalCountModel');
 const { ObjectId } = require('mongodb'); 
 const connectDB = require('../config/connectionDb');
 
@@ -171,6 +172,17 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
 
 const getGlobalNumber = async () => {
+
+  try {
+    const result = await GlobalCount.findByIdAndUpdate(
+      '64cdcb18e51bfac6b6e9dd76',
+      { $inc: { im: 1 } },
+      { new: true }
+    );
+    console.log('Updated value:', result.im);
+  } catch (error) {
+    console.error('Error:', error);
+  }
 
   try {
     const collection = mongoose.connection.db.collection('global_user_count');
