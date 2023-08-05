@@ -103,6 +103,93 @@ return {
     };
   }
 }
+
+//@desc get l
+//@route POST /api/users/assignUplineId
+//@access public
+const assignUplineId = async (req, res) => {
+  const { sponsor_id, position} = req.body;
+
+  if (!sponsor_id ) {
+    return res.status(400).json({ success: false, message: 'Sponsor id is missing' });
+  }
+  if (!position ) {
+    return res.status(400).json({ success: false, message: 'Postion is missing' });
+  }
+
+  const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
+
+  try {
+
+    //here first we will get the global number
+    const number= await getGlobalNumber();
+   
+    const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
+    res.status(200).json({ success: true, upline_id: uplineNode });
+  } catch (err) {
+    console.error('Error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+async function findNearestNodeWithNullChild(uplineId, position) {
+  console.log("uid"+uplineId);
+  const node = await User.findById(uplineId);
+  if (!node) {
+    console.log("Node not found!");
+    return null;
+  }
+
+  // Check if the current node has no left or right child
+  if (!node.left_child_id && !node.right_child_id) {
+    return node._id; // Return the current node ID itself
+  }
+
+  let childId = position === "left" ? node.left_child_id : node.right_child_id;
+
+  // If the specified position is "left" and the left child is null, or
+  // if the specified position is "right" and the right child is null,
+  // return the current node ID itself.
+  if ((position === "left" && !childId) || (position === "right" && !childId)) {
+    return node._id;
+  }
+
+  // Recursively find the nearest node with null child
+  return await findNearestNodeWithNullChild(childId, position);
+}
+
+
+
+const getGlobalNumber = async (req, res) => {
+
+  try {
+    await connectDB(); // Connect to the database using Mongoose
+
+    const db = mongoose.connection.db; // Get the database instance from Mongoose
+    const collection = db.collection('global_user_count');
+
+    // Find the document and get the current value of the 'im' field
+    const result = await collection.findOneAndUpdate(
+      { _id: ObjectId('64cdcb18e51bfac6b6e9dd76') },
+      { $inc: { im: 1 } }, // Increment the 'im' field by 1
+      { returnOriginal: false } // Return the updated document
+    );
+
+    const incrementedValue = result.value.im;
+    return {
+      success: true,
+      message: incrementedValue
+    };
+  } catch (err) {
+    console.error('Error:', err.message);
+    return {
+      success: false,
+      message: err.message
+    };
+  } finally {
+    mongoose.disconnect(); // Disconnect from the database when done
+  }
+};
+
 async function getFullChildNodes(nodeId) {
   const node = await User.findById(nodeId);
   if (!node) {
@@ -180,94 +267,6 @@ const getChildNodes = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
-//@desc get l
-//@route POST /api/users/assignUplineId
-//@access public
-const assignUplineId = async (req, res) => {
-  const { sponsor_id, position} = req.body;
-
-  if (!sponsor_id ) {
-    return res.status(400).json({ success: false, message: 'Sponsor id is missing' });
-  }
-  if (!position ) {
-    return res.status(400).json({ success: false, message: 'Postion is missing' });
-  }
-
-  const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
-
-  try {
-
-    //here first we will get the global number
-    const number= await getGlobalNumber();
-   
-    const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
-    res.status(200).json({ success: true, upline_id: uplineNode });
-  } catch (err) {
-    console.error('Error:', err.message);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-};
-async function findNearestNodeWithNullChild(uplineId, position) {
-  console.log("uid"+uplineId);
-  const node = await User.findById(uplineId);
-  if (!node) {
-    console.log("Node not found!");
-    return null;
-  }
-
-  // Check if the current node has no left or right child
-  if (!node.left_child_id && !node.right_child_id) {
-    return node._id; // Return the current node ID itself
-  }
-
-  let childId = position === "left" ? node.left_child_id : node.right_child_id;
-
-  // If the specified position is "left" and the left child is null, or
-  // if the specified position is "right" and the right child is null,
-  // return the current node ID itself.
-  if ((position === "left" && !childId) || (position === "right" && !childId)) {
-    return node._id;
-  }
-
-  // Recursively find the nearest node with null child
-  return await findNearestNodeWithNullChild(childId, position);
-}
-
-
-
-const getGlobalNumber = async (req, res) => {
-
-  try {
-    await connectDB();
-    
-    const db = client.db('incomemining_db'); // Replace with your database name
-    const collection = db.collection('global_user_count');
-
-    // Find the document and get the current value of the 'im' field
-    const result = await collection.findOneAndUpdate(
-      { _id: ObjectId('64cdcb18e51bfac6b6e9dd76') },
-      { $inc: { im: 1 } }, // Increment the 'im' field by 1
-      { returnOriginal: false } // Return the updated document
-    );
-
-    const incrementedValue = result.value.im;
-    return {
-      success: true,
-      message: incrementedValue
-    };
-  } catch (err) {
-    console.error('Error:', err.message);
-    return {
-      success: false,
-      message: err.message
-    };
-  } finally {
-    // Close the MongoDB connection
-    await client.close();
-  }
-};
-
 
 
 module.exports.register = register;
