@@ -32,13 +32,13 @@ const register = async (req, res) => {
   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
   const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
 
-  const number = await getGlobalNumber();
+  let number = await getGlobalNumber();
 
-  username="IM"+name.slice(0, 2).toUpperCase()+number;
+  let new_username="IM"+name.slice(0, 2).toUpperCase()+number;
   // Insert the new child node and update the parent node
   try {
     const newChildNode = {
-      username,
+      new_username,
       password,
       parent_id: parentId,
       name,
