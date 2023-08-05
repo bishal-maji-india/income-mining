@@ -162,7 +162,6 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 const getGlobalNumber = async (req, res) => {
 
   try {
-    await connectDB(); // Connect to the database using Mongoose
 
     const db = mongoose.connection.db; // Get the database instance from Mongoose
     const collection = db.collection('global_user_count');
