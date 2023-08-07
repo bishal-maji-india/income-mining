@@ -22,21 +22,16 @@ const login = async (req, res) => {
   }
   // Insert the new child node and update the parent node
   try {
-    const userDetail = {
-      username,
-      password
-    };
-    
-
+  
 
     // Call the insertChildAndUpdateParent function
-    const response = await loginUser(userDetail);
+    const response = await loginUser(username,password);
 
     // If the above logic is successful, send a success response with the message
     if (response.success) {
       //save the response jwt for further request 
       console.log(response.message);
-      // res.status(200).json({ success: true, message: response.message });
+      res.status(200).json({ success: true, message: response.message, token:response.token });
     } else {
       res.status(500).json({ success: false, message: response.message });
     }
@@ -45,9 +40,11 @@ const login = async (req, res) => {
     return res.status(500).json({ success: false, message: 'An error occurred during Login' });
   }
 };
-async function loginUser(userDetail){
+
+async function loginUser(username, password){
   try {
-    // Step 1: Find the user by username
+
+    // Step 1: Find the user by usernameusername
     const user = await User.findOne({ username });
 
     // Check if the user exists
@@ -68,8 +65,60 @@ async function loginUser(userDetail){
       };
     }
 
-    // Step 3: Generate a JWT token
-    const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' }); // Adjust the expiration time as needed
+       const token=jwt.sign({
+        user:{
+          username:user.username,
+          name: user.name,
+          email:user.email,
+          parent_id:user.parent_id,
+          upline_id:user.upline_id,
+          id: user.id,
+          mobile:user.mobile,
+          address:user.address,
+          state:user.state,
+          city:user.city,
+          country:user.country,
+          pin:user.pin,
+          pan:user.pan,
+          left_child_id:user.left_child_id,
+          right_child_id:user.right_child_id,
+          is_active_user:user.is_active_user,
+          // const getChildNodes = async (req, res) => {
+          //   const { node_id } = req.body;getChildNodes
+          
+          //   if (!node_id) {module.exports=getChildNodes;
+          
+          //     return res.status(400).json({ success: false, message: 'All fields are required' });
+          //   }
+          
+          //   const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
+          
+          //   const childCounts = await countChildNodes(nodeId);
+          
+          //   res.status(200).json({ success: true, message: "left childs="+childCounts.left+"right childs="+childCounts.right });
+          // };
+          
+          
+          
+          // async function insertFirstUserTEST(parent_id){
+          //   //  for inserting the first user
+          //   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
+          //   await User.create({
+          //     username:"First User Test",
+          //     upline_id:parentId,
+          //     sponsor_id:parentId,
+          //     value:1
+          //     });
+          // }
+          left_count:user.left_count,
+          right_count:user.right_count,
+          u_left_count:user.u_left_count,
+          u_right_count:user.u_right_count,
+          amount:user.amount
+        }
+       },process.env.ACCESS_TOKEN_SECRET,
+       {expiresIn: "10m"}
+       );
 
     return {
       success: true,
@@ -103,7 +152,7 @@ const register = async (req, res) => {
     country,
     pin,
     pan
-  } = req.body;
+  } = req.body;register
 
   // Check if any required fields are missing
   if (!password || !username || !parent_id || !position || !name || !upline_id || !mobile || !email || !address || !state || !country || !pin) {
@@ -127,7 +176,7 @@ if (numberResult.success) {
   // Insert the new child node and update the parent node
   try {
         // Hash the password before storing it
-        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
 
 
     const newChildNode = {
@@ -201,7 +250,7 @@ return {
   }
 }
 
-//@desc get l
+//@desc assign upline id from parent id 
 //@route POST /api/users/assignUplineId
 //@access public
 const assignUplineId = async (req, res) => {
@@ -362,31 +411,4 @@ const getChildNodes = async (req, res) => {
 module.exports.register = register;
 module.exports.getChildNodes = getChildNodes;
 module.exports.assignUplineId = assignUplineId;
-
-// const getChildNodes = async (req, res) => {
-//   const { node_id } = req.body;getChildNodes
-
-//   if (!node_id) {module.exports=getChildNodes;
-
-//     return res.status(400).json({ success: false, message: 'All fields are required' });
-//   }
-
-//   const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
-
-//   const childCounts = await countChildNodes(nodeId);
-
-//   res.status(200).json({ success: true, message: "left childs="+childCounts.left+"right childs="+childCounts.right });
-// };
-
-
-
-// async function insertFirstUserTEST(parent_id){
-//   //  for inserting the first user
-//   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
-//   await User.create({
-//     username:"First User Test",
-//     upline_id:parentId,
-//     sponsor_id:parentId,
-//     value:1
-//     });
-// }
+module.exports.login=login;
