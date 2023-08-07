@@ -74,42 +74,9 @@ async function loginUser(username, password){
           upline_id:user.upline_id,
           id: user.id,
           mobile:user.mobile,
-          address:user.address,
-          state:user.state,
-          city:user.city,
-          country:user.country,
-          pin:user.pin,
-          pan:user.pan,
           left_child_id:user.left_child_id,
           right_child_id:user.right_child_id,
           is_active_user:user.is_active_user,
-          // const getChildNodes = async (req, res) => {
-          //   const { node_id } = req.body;getChildNodes
-          
-          //   if (!node_id) {module.exports=getChildNodes;
-          
-          //     return res.status(400).json({ success: false, message: 'All fields are required' });
-          //   }
-          
-          //   const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
-          
-          //   const childCounts = await countChildNodes(nodeId);
-          
-          //   res.status(200).json({ success: true, message: "left childs="+childCounts.left+"right childs="+childCounts.right });
-          // };
-          
-          
-          
-          // async function insertFirstUserTEST(parent_id){
-          //   //  for inserting the first user
-          //   const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
-          //   await User.create({
-          //     username:"First User Test",
-          //     upline_id:parentId,
-          //     sponsor_id:parentId,
-          //     value:1
-          //     });
-          // }
           left_count:user.left_count,
           right_count:user.right_count,
           u_left_count:user.u_left_count,
@@ -117,7 +84,7 @@ async function loginUser(username, password){
           amount:user.amount
         }
        },process.env.ACCESS_TOKEN_SECRET,
-       {expiresIn: "10m"}
+       {expiresIn: "2m"}
        );
 
     return {
