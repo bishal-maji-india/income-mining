@@ -13,7 +13,7 @@ const validateToken=asyncHandler(async (req,res, next)=>{
             }
             console.log(decoded);
             req.user=decoded.user;
-            next;
+            next();
         });
     }
     if(!token){

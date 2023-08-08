@@ -4,7 +4,17 @@ const GlobalCount=require('../models/globalCountModel');
 const { ObjectId } = require('mongodb'); 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); // For password hashing
+const expressAsyncHandler = require('express-async-handler');
 
+
+//@desc Current User Information
+//@route GET /api/users/current
+//@access private
+const currentUser = expressAsyncHandler(async (req,res)=>{
+
+ res.status(200).json({ success: true, user: req.user });
+
+});
 
 
 //@desc Login User
@@ -119,7 +129,7 @@ const register = async (req, res) => {
     country,
     pin,
     pan
-  } = req.body;register
+  } = req.body;
 
   // Check if any required fields are missing
   if (!password || !username || !parent_id || !position || !name || !upline_id || !mobile || !email || !address || !state || !country || !pin) {
@@ -379,3 +389,4 @@ module.exports.register = register;
 module.exports.getChildNodes = getChildNodes;
 module.exports.assignUplineId = assignUplineId;
 module.exports.login=login;
+module.exports.currentUser=currentUser;
