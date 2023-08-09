@@ -94,7 +94,7 @@ async function loginUser(username, password){
           amount:user.amount
         }
        },process.env.ACCESS_TOKEN_SECRET,
-       {expiresIn: "2h"}
+       {expiresIn: "3m"}
        );
 
     return {
@@ -116,7 +116,6 @@ async function loginUser(username, password){
 //@access public
 const register = async (req, res) => {
   const {
-    username,
     password,
     parent_id,
     position,
@@ -132,7 +131,7 @@ const register = async (req, res) => {
   } = req.body;
 
   // Check if any required fields are missing
-  if (!password || !username || !parent_id || !position || !name || !upline_id || !mobile || !email || !address || !state || !country || !pin) {
+  if (!password || !parent_id || !position || !name || !upline_id || !mobile || !email || !address || !state || !country || !pin) {
     return res.status(400).json({ success: false, message: 'All register fields are required' });
   }
 
@@ -235,19 +234,21 @@ return {
 //@route POST /api/users/assignUplineId
 //@access public
 const assignUplineId = async (req, res) => {
-  const { username, position} = req.body;
 
-  if (!username ) {
+  const { sponsor_id, position} = req.body;
+
+  if (!sponsor_id ) {
     return res.status(400).json({ success: false, message: 'Sponsor id is missing' });
   }
   if (!position ) {
     return res.status(400).json({ success: false, message: 'Postion is missing' });
   }
 
+  
 
   try {
 
-    const uplineNode = await findNearestNodeWithNullChild(username, position);
+    const uplineNode = await findNearestNodeWithNullChild(sponsor_id, position);
     res.status(200).json({ success: true, upline_id: uplineNode });
   } catch (err) {
     console.error('Error:', err.message);
@@ -255,7 +256,6 @@ const assignUplineId = async (req, res) => {
   }
 };
 async function findNearestNodeWithNullChild(username, position) {
-  console.log("uid"+username);
 //we have to start work from here-id to username change
 const node = await User.findOne({ username: username });
 
