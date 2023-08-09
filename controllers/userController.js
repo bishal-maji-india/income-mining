@@ -55,7 +55,7 @@ async function loginUser(username, password){
   try {
 
     // Step 1: Find the user by usernameusername
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username:username});
 
     // Check if the user exists
     if (!user) {
@@ -94,7 +94,7 @@ async function loginUser(username, password){
           amount:user.amount
         }
        },process.env.ACCESS_TOKEN_SECRET,
-       {expiresIn: "2m"}
+       {expiresIn: "2h"}
        );
 
     return {
@@ -137,8 +137,8 @@ const register = async (req, res) => {
   }
 
   // Convert parent_id and upline_id from string to ObjectId using mongoose.Types.ObjectId()
-  const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
-  const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
+  // const parentId = mongoose.Types.ObjectId.createFromHexString(parent_id);
+  // const uplineId = mongoose.Types.ObjectId.createFromHexString(upline_id);
 
 let numberResult = await getGlobalNumber();
 
@@ -159,9 +159,9 @@ if (numberResult.success) {
     const newChildNode = {
       username: new_username,
       password: hashedPassword,
-      parent_id: parentId,
+      parent_id,
       name,
-      upline_id: uplineId,
+      upline_id,
       mobile,
       email,
       address,
@@ -174,7 +174,7 @@ if (numberResult.success) {
 
 
     // Call the insertChildAndUpdateParent function
-    const response = await insertChildAndUpdateParent(uplineId, position, newChildNode,password);
+    const response = await insertChildAndUpdateParent(upline_id, position, newChildNode);
 
     // If the above logic is successful, send a success response with the message
     if (response.success) {
@@ -190,20 +190,23 @@ if (numberResult.success) {
 
 
 // Function to insert the new child node and update the parent node
-async function insertChildAndUpdateParent(uplineId, position, newChild,password) {
+async function insertChildAndUpdateParent( upline_id,position, newChild) {
   try {
     // Step 1: Insert the new child node
     const childNode = new User(newChild);
     const savedChild = await childNode.save();
-    const newChildId = savedChild._id; // Get the generated _id after saving the child
+    const newChildId = savedChild.username; // Get the username after saving the child
 
     // Step 2: Update the parent node
     const updateField = position === 'left' ? 'left_child_id' : 'right_child_id';
 // Assuming the User variable is already declared or imported
-await User.updateOne({ _id: uplineId }, { $set: { [updateField]: newChildId } });
+await User.updateOne({ username: upline_id }, { $set: { [updateField]: newChildId } });
+
+const newUser = await User.findOne({ username: newChildId });
+
 
 // Fetch the updated user after the update
-const newUser = await User.findById(newChildId);
+// const newUser = await User.findById(newChildId);
 
 // Check if the user was found
 if (!newUser) {
@@ -216,7 +219,7 @@ if (!newUser) {
 // Return the updated user's dataupdateField
 return {
   success: true,
-  message: "Username: " + newUser.username + "    " + "Password: " + password
+  message: "Username: " + newUser.username
 };
 
   } catch (err) {
@@ -227,33 +230,36 @@ return {
   }
 }
 
+
 //@desc assign upline id from parent id 
 //@route POST /api/users/assignUplineId
 //@access public
 const assignUplineId = async (req, res) => {
-  const { sponsor_id, position} = req.body;
+  const { username, position} = req.body;
 
-  if (!sponsor_id ) {
+  if (!username ) {
     return res.status(400).json({ success: false, message: 'Sponsor id is missing' });
   }
   if (!position ) {
     return res.status(400).json({ success: false, message: 'Postion is missing' });
   }
 
-  const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
 
   try {
 
-    const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
+    const uplineNode = await findNearestNodeWithNullChild(username, position);
     res.status(200).json({ success: true, upline_id: uplineNode });
   } catch (err) {
     console.error('Error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-async function findNearestNodeWithNullChild(uplineId, position) {
-  console.log("uid"+uplineId);
-  const node = await User.findById(uplineId);
+async function findNearestNodeWithNullChild(username, position) {
+  console.log("uid"+username);
+//we have to start work from here-id to username change
+const node = await User.findOne({ username: username });
+
+  // const node = await User.findById(uplineId);
   if (!node) {
     console.log("Node not found!");
     return null;
@@ -261,7 +267,7 @@ async function findNearestNodeWithNullChild(uplineId, position) {
 
   // Check if the current node has no left or right child
   if (!node.left_child_id && !node.right_child_id) {
-    return node._id; // Return the current node ID itself
+    return node.username; // Return the current node ID itself
   }
 
   let childId = position === "left" ? node.left_child_id : node.right_child_id;
@@ -270,12 +276,64 @@ async function findNearestNodeWithNullChild(uplineId, position) {
   // if the specified position is "right" and the right child is null,
   // return the current node ID itself.
   if ((position === "left" && !childId) || (position === "right" && !childId)) {
-    return node._id;
+    return node.username;
   }
 
   // Recursively find the nearest node with null child
   return await findNearestNodeWithNullChild(childId, position);
 }
+
+// //@desc assign upline id from parent id 
+// //@route POST /api/users/assignUplineId
+// //@access public
+// const assignUplineId = async (req, res) => {
+//   const { sponsor_id, position} = req.body;
+
+//   if (!sponsor_id ) {
+//     return res.status(400).json({ success: false, message: 'Sponsor id is missing' });
+//   }
+//   if (!position ) {
+//     return res.status(400).json({ success: false, message: 'Postion is missing' });
+//   }
+
+//   const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
+
+//   try {
+
+//     const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
+//     res.status(200).json({ success: true, upline_id: uplineNode });
+//   } catch (err) {
+//     console.error('Error:', err.message);
+//     res.status(500).json({ success: false, message: 'Server error' });
+//   }
+// };
+// async function findNearestNodeWithNullChild(uplineId, position) {
+//   console.log("uid"+uplineId);
+// //we have to start work from here-id to username change
+
+//   const node = await User.findById(uplineId);
+//   if (!node) {
+//     console.log("Node not found!");
+//     return null;
+//   }
+
+//   // Check if the current node has no left or right child
+//   if (!node.left_child_id && !node.right_child_id) {
+//     return node._id; // Return the current node ID itself
+//   }
+
+//   let childId = position === "left" ? node.left_child_id : node.right_child_id;
+
+//   // If the specified position is "left" and the left child is null, or
+//   // if the specified position is "right" and the right child is null,
+//   // return the current node ID itself.
+//   if ((position === "left" && !childId) || (position === "right" && !childId)) {
+//     return node._id;
+//   }
+
+//   // Recursively find the nearest node with null child
+//   return await findNearestNodeWithNullChild(childId, position);
+// }
 
 
 
