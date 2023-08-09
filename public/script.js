@@ -2,15 +2,16 @@ document.addEventListener('DOMContentLoaded', function () {
   const canvas = document.getElementById('binaryTreeCanvas');
   const ctx = canvas.getContext('2d');
   const canvasScroll = document.getElementById('canvasScroll'); // Get the canvas scroll container
-
+  
   class TreeNode {
-    constructor(id, name, left_child_id, right_child_id, x, y) {
+    constructor(id, name, left_child_id, right_child_id, x, y,username) {
       this.id = id;
       this.name = name;
       this.left_child_id = left_child_id;
       this.right_child_id = right_child_id;
       this.x = x;
       this.y = y;
+      this.username=username;
     }
   }
 
@@ -57,24 +58,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // Draw left tree
     if (currentNode !== null && currentNode.left_child_id !== null) {
       const leftNode = treeNodes.find((n) => n.id === currentNode.left_child_id);
-      drawLine(xstep, ystep + 20, xstep - distance, ystep + 100 - 20, ctx);
-      drawTree(treeNodes, leftNode, xstep - distance, ystep + 100, distance / 2 + 20);
+      drawLine(xstep, ystep + 20, xstep - distance, ystep + 70 - 20, ctx);
+      drawTree(treeNodes, leftNode, xstep - distance, ystep + 70, distance / 2 + 20);
     }
 
     // Draw right tree
     if (currentNode !== null && currentNode.right_child_id !== null) {
       const rightNode = treeNodes.find((n) => n.id === currentNode.right_child_id);
-      drawLine(xstep, ystep + 20, xstep + distance, ystep + 100 - 20, ctx);
-      drawTree(treeNodes, rightNode, xstep + distance, ystep + 100, distance / 2 + 20);
+      drawLine(xstep, ystep + 20, xstep + distance, ystep + 70 - 20, ctx);
+      drawTree(treeNodes, rightNode, xstep + distance, ystep + 70, distance / 2 + 20);
     }
   }
 
   function drawCenteredTree(treeNodes) {
-    const treeWidth = treeNodes.length * 100;
+    const treeWidth = treeNodes.length * 150;
     const xStart = treeWidth / 2; // Center the tree horizontally
     const yStart = 100;
 
-    drawTree(treeNodes, treeNodes[0], xStart, yStart, 100);
+    drawTree(treeNodes, treeNodes[0], xStart, yStart, 50);
   }
 
   function resizeCanvasToFitTree(treeNodes) {
@@ -96,8 +97,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const baseUrl = "https://income-mining.onrender.com/api/users/getChildNodes";
     // Replace this with the node ID from your input field
     
-    const nodeId = localStorage.getItem("uid");
-    if(nodeId==null||!nodeId){
+    let nodeId = localStorage.getItem("uid");
+    if(nodeId==null || !nodeId){
       nodeId = "64c00b6a849a379cc91b4ab4";
     }
 
@@ -118,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (nodeData.success === true) {
           const apiResponse = nodeData.nodes;
           console.log("array"+apiResponse);
-          treeNodes = apiResponse.map((nodeData) => new TreeNode(nodeData._id, nodeData.name, nodeData.left_child_id, nodeData.right_child_id));
+          treeNodes = apiResponse.map((nodeData) => new TreeNode(nodeData._id, nodeData.name, nodeData.left_child_id, nodeData.right_child_id,0,0,nodeData.username));
           drawCenteredTree(treeNodes);
           // Draw the centered tree using the fetched data
           resizeCanvasToFitTree(treeNodes);

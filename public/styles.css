@@ -54,6 +54,7 @@
 
     #binaryTreeCanvas {
         display: block;
+        margin: auto;
     }
 
     .popup {
