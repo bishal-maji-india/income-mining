@@ -93,36 +93,42 @@ document.addEventListener('DOMContentLoaded', function () {
   let treeNodes = [];
 
   async function fetchDataAndDrawTree() {
-    console.log("started");
     const baseUrl = "https://income-mining.onrender.com/api/users/getChildNodes";
-    const nodeId = "64c00b6a849a379cc91b4ab4"; // Replace this with the node ID from your input field
+    // Replace this with the node ID from your input field
+    
+    // const nodeId = localStorage.getItem("uid");
+        const nodeId = "IMBI100015";
 
-    try {
-      const response = await fetch(baseUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json" // Add the Accept header
-        },
-        body: JSON.stringify({ node_id: nodeId }),
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
-      }  
-      const nodeData = await response.json();
-
-      if (nodeData.success === true) {
-        const apiResponse = nodeData.nodes;
-        console.log("array"+apiResponse);
-        treeNodes = apiResponse.map((nodeData) => new TreeNode(nodeData._id, nodeData.name, nodeData.left_child_id, nodeData.right_child_id));
-        drawCenteredTree(treeNodes);
-        // Draw the centered tree using the fetched data
-        resizeCanvasToFitTree(treeNodes);
-      } else {
-        console.error("API call failed.");
+    if(nodeId){
+      try {
+        const response = await fetch(baseUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json" // Add the Accept header
+          },
+          body: JSON.stringify({ node_id: nodeId }),
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok.");
+        }  
+        const nodeData = await response.json();
+  
+        if (nodeData.success === true) {
+          const apiResponse = nodeData.nodes;
+          console.log("array"+apiResponse);
+          treeNodes = apiResponse.map((nodeData) => new TreeNode(nodeData._id, nodeData.name, nodeData.left_child_id, nodeData.right_child_id));
+          drawCenteredTree(treeNodes);
+          // Draw the centered tree using the fetched data
+          resizeCanvasToFitTree(treeNodes);
+        } else {
+          console.error("API call failed.");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
     }
+
+   
   }
 
   // Call the fetchDataAndDrawTree function to make the API call and fetch the data

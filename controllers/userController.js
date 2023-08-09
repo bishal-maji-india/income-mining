@@ -244,7 +244,6 @@ const assignUplineId = async (req, res) => {
     return res.status(400).json({ success: false, message: 'Postion is missing' });
   }
 
-  
 
   try {
 
@@ -255,8 +254,9 @@ const assignUplineId = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
 async function findNearestNodeWithNullChild(username, position) {
-//we have to start work from here-id to username change
+
 const node = await User.findOne({ username: username });
 
   // const node = await User.findById(uplineId);
@@ -282,58 +282,6 @@ const node = await User.findOne({ username: username });
   // Recursively find the nearest node with null child
   return await findNearestNodeWithNullChild(childId, position);
 }
-
-// //@desc assign upline id from parent id 
-// //@route POST /api/users/assignUplineId
-// //@access public
-// const assignUplineId = async (req, res) => {
-//   const { sponsor_id, position} = req.body;
-
-//   if (!sponsor_id ) {
-//     return res.status(400).json({ success: false, message: 'Sponsor id is missing' });
-//   }
-//   if (!position ) {
-//     return res.status(400).json({ success: false, message: 'Postion is missing' });
-//   }
-
-//   const nodeId = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
-
-//   try {
-
-//     const uplineNode = await findNearestNodeWithNullChild(nodeId, position);
-//     res.status(200).json({ success: true, upline_id: uplineNode });
-//   } catch (err) {
-//     console.error('Error:', err.message);
-//     res.status(500).json({ success: false, message: 'Server error' });
-//   }
-// };
-// async function findNearestNodeWithNullChild(uplineId, position) {
-//   console.log("uid"+uplineId);
-// //we have to start work from here-id to username change
-
-//   const node = await User.findById(uplineId);
-//   if (!node) {
-//     console.log("Node not found!");
-//     return null;
-//   }
-
-//   // Check if the current node has no left or right child
-//   if (!node.left_child_id && !node.right_child_id) {
-//     return node._id; // Return the current node ID itself
-//   }
-
-//   let childId = position === "left" ? node.left_child_id : node.right_child_id;
-
-//   // If the specified position is "left" and the left child is null, or
-//   // if the specified position is "right" and the right child is null,
-//   // return the current node ID itself.
-//   if ((position === "left" && !childId) || (position === "right" && !childId)) {
-//     return node._id;
-//   }
-
-//   // Recursively find the nearest node with null child
-//   return await findNearestNodeWithNullChild(childId, position);
-// }
 
 
 
@@ -365,7 +313,8 @@ const getGlobalNumber = async () => {
 };
 
 async function getFullChildNodes(nodeId) {
-  const node = await User.findById(nodeId);
+  const node = await User.findOne({ username:nodeId});
+
   if (!node) {
     console.log("Node not found!");
     return [];
@@ -431,10 +380,10 @@ const getChildNodes = async (req, res) => {
     return res.status(400).json({ success: false, message: 'All fields are required' });
   }
 
-  const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
+  // const nodeId = mongoose.Types.ObjectId.createFromHexString(node_id);
 
   try {
-    const childNodes = await getFullChildNodes(nodeId);
+    const childNodes = await getFullChildNodes(node_id);
     res.status(200).json({ success: true, nodes: childNodes });
   } catch (err) {
     console.error('Error:', err.message);
