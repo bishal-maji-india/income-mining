@@ -96,8 +96,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const baseUrl = "https://income-mining.onrender.com/api/users/getChildNodes";
     // Replace this with the node ID from your input field
     
-    // const nodeId = localStorage.getItem("uid");
-        const nodeId = "IMBI100015";
+    const nodeId = localStorage.getItem("uid");
+    if(nodeId==null||!nodeId){
+      nodeId = "64c00b6a849a379cc91b4ab4";
+    }
 
     if(nodeId){
       try {
@@ -158,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const popupName = document.getElementById('popupName');
         const popupId = document.getElementById('popupId');
         popupName.textContent = `Name: ${node.name}`;
-        popupId.textContent = `ID: ${node.id}`;
+        popupId.textContent = `ID: ${node.username}`;
         break; // Only handle the first clicked node (if multiple nodes overlap)
       }
     }

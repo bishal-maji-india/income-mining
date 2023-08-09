@@ -7,7 +7,8 @@ const userSchema = mongoose.Schema({
     unique:true,
   },
   parent_id: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: [true, "parent id is required"],
   },
 
@@ -21,7 +22,8 @@ const userSchema = mongoose.Schema({
     required:[true,"password is required"],
   },
   upline_id:{
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: [true, "upline id is required"],
 
   },
@@ -61,12 +63,14 @@ const userSchema = mongoose.Schema({
     default:"",
   },
   left_child_id: {
-    type: String, // Change to ObjectId
-    default: "",
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Change to ObjectId
+    default: null,
   },
   right_child_id: {
-    type: String, // Change to ObjectId
-    default: "",
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',// Change to ObjectId
+    default: null,
   },
   left_count: {
     type: Number,
