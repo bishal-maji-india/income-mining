@@ -172,7 +172,7 @@ if (numberResult.success) {
 
 
     // Call the insertChildAndUpdateParent function
-    const response = await insertChildAndUpdateParent(uplineId, position, newChildNode);
+    const response = await insertChildAndUpdateParent(upline_id, position, newChildNode);
 
     // If the above logic is successful, send a success response with the message
     if (response.success) {
@@ -188,7 +188,7 @@ if (numberResult.success) {
 
 
 // Function to insert the new child node and update the parent node
-async function insertChildAndUpdateParent( uplineId,position, newChild) {
+async function insertChildAndUpdateParent( upline_id,position, newChild) {
   try {
     // Step 1: Insert the new child node
     const childNode = new User(newChild);
@@ -198,7 +198,7 @@ async function insertChildAndUpdateParent( uplineId,position, newChild) {
     // Step 2: Update the parent node
     const updateField = position === 'left' ? 'left_child_id' : 'right_child_id';
 // Assuming the User variable is already declared or imported
-await User.updateOne({ _id: uplineId }, { $set: { [updateField]: newChildId } });
+await User.updateOne({ _id: upline_id }, { $set: { [updateField]: newChildId } });
 // const newUser = await User.findOne({ username: newChildId });
 
 
