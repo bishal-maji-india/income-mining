@@ -257,7 +257,7 @@ const assignUplineId = async (req, res) => {
 
 async function findNearestNodeWithNullChild(sponsor_id, position) {
 
-  let node = await User.findById({ sponsor_id});
+  let node = await User.findById(sponsor_id);
 
   if (!node) {
     console.log("Node not found!");
