@@ -40,7 +40,6 @@ const login = async (req, res) => {
     // If the above logic is successful, send a success response with the message
     if (response.success) {
       //save the response jwt for further request 
-      console.log(response.message);
       res.status(200).json({ success: true, message: response.message, token:response.token });
     } else {
       res.status(500).json({ success: false, message: response.message });
