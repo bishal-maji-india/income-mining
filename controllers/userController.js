@@ -254,7 +254,9 @@ const assignUplineId = async (req, res) => {
 };
 
 async function findNearestNodeWithNullChild(sponsor_id, position) {
-  const node = await User.findById({sponsor_id});
+  const nid = mongoose.Types.ObjectId.createFromHexString(sponsor_id);
+
+  const node = await User.findById({ nid});
 
   if (!node) {
     console.log("Node not found!");
