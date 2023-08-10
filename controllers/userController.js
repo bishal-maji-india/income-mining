@@ -244,18 +244,18 @@ const assignUplineId = async (req, res) => {
 
 
   try {
-
+    const node = await User.findOne({ username: sponsor_id});
     const uplineNode = await findNearestNodeWithNullChild(sponsor_id, position);
-    res.status(200).json({ success: true, upline_id: uplineNode });
+    res.status(200).json({ success: true, upline_id: uplineNode, sponsor_id: node._id });
   } catch (err) {
     console.error('Error:', err.message);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-async function findNearestNodeWithNullChild(uplineId, position) {
-  const node = await User.findOne({ username: uplineId});
-  // const node = await User.findById(uplineId);
+async function findNearestNodeWithNullChild(sponsor_id, position) {
+  const node = await User.findOne({ username: sponsor_id});
+
   if (!node) {
     console.log("Node not found!");
     return null;
