@@ -245,7 +245,7 @@ const assignUplineId = async (req, res) => {
 
   try {
     const node = await User.findOne({ username: sponsor_id});
-    const nid = mongoose.Types.ObjectId.createFromHexString(node._id);
+    const nid = node._id;
 
     const uplineNode = await findNearestNodeWithNullChild(nid, position);
     res.status(200).json({ success: true, upline_id: uplineNode, sponsor_id: node._id });
@@ -257,7 +257,7 @@ const assignUplineId = async (req, res) => {
 
 async function findNearestNodeWithNullChild(sponsor_id, position) {
 
-  const node = await User.findById({ sponsor_id});
+  let node = await User.findById({ sponsor_id});
 
   if (!node) {
     console.log("Node not found!");
